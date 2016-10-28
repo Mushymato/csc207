@@ -1,0 +1,16 @@
++Class Tags
+-----Attribute-----
+#PREFIX: String
+-tagList: java.util.list<String>
+-tagListPath: String
+------Methods------
++Tags(File tags): void
++writeTagList(): void
++getTagList(): java.util.list
+
+Responsibilities
+	Track what tags have been used
+	Save list of tags as .txt file
+	Read list of tags from .txt file
+Collaborators
+	None

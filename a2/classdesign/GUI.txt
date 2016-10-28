@@ -1,0 +1,10 @@
++Class GraphicUserInterface
+-----Attribute-----
++frame: JFrame;
+------Methods------
+#GraphicUserInterface();
+
+Responsibilities
+	Provide graphical user interface to backend methods
+Collaborators
+	Image

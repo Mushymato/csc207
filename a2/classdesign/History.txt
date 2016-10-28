@@ -1,0 +1,18 @@
++Class History
+-----Attribute-----
+-log: java.util.TreeMap<String. String>
+-logPath: String
+------Methods------
++History(): void
++change(): void
++unChange(): String
++unChange(Timestamp time): String
++writeLog(): void
+
+Responsiblities
+	Track name changes
+	Write changelog to disk
+	Return most recent change
+	Return change made at specified time
+Collaborators
+	None

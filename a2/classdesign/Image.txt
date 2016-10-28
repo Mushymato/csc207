@@ -1,0 +1,22 @@
+public Class Image
+-----Attribute-----
++img: java.io.File
++tags: java.util.list<String>
+-log: History
+------Methods------
++Image: void
++Image(String path): void
++addTag(String tag): boolean
++delTag(String tag): boolean
++revertName(): void
++revertName(Timestamp time): void
+
+Responsibilities:
+	Manage tags addtion/removal
+	Manage file name changes
+	Revert file name to previous name(s)
+Collaborators
+	History: track file name changes
+	Tags: track previously used tags
+	
+	
