@@ -1,10 +1,16 @@
-+Class GraphicUserInterface
++Class GraphicUserInterface implements serializable
 -----Attribute-----
 +frame: JFrame;
+-img: java.util.list<Image>
+-serialVersionUID
 ------Methods------
 #GraphicUserInterface();
 
 Responsibilities
+	load serialized program state
 	Provide graphical user interface to backend methods
+	Locate image files in the file system
+	Initialize new instances of image
+	Serialize current state and save to disk on close
 Collaborators
-	Image
+	Image: Manage each individual image

@@ -10,9 +10,10 @@
 +writeLog(): void
 
 Responsiblities
-	Track name changes
+	Load log file from on initialization
+	Track name changes of file
 	Write changelog to disk
 	Return most recent change
 	Return change made at specified time
 Collaborators
-	None
+	Image

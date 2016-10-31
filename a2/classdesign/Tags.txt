@@ -10,7 +10,9 @@
 
 Responsibilities
 	Track what tags have been used
-	Save list of tags as .txt file
-	Read list of tags from .txt file
+	Add new tags to list of previously used tags
+	Save list of tags as .txt file each time a new tag is created
+	Read list of tags from .txt file on initialization
 Collaborators
-	None
+	Image
+	GUI
