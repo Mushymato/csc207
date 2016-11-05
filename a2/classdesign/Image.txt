@@ -1,12 +1,11 @@
-public Class Image
+public Class Image extends File
 -----Attribute-----
-+img: java.io.File
-+tags: java.util.list<String>
++tags: java.util.HashSet<String>
 -log: History
 ------Methods------
 +Image: void
 +Image(String path): void
-+addTag(String tag): boolean
++newTag(String tag): boolean
 +delTag(String tag): boolean
 +revertName(): void
 +revertName(Timestamp time): void
@@ -18,5 +17,4 @@ Responsibilities:
 Collaborators
 	History: track file name changes
 	Tags: track previously used tags
-	
-	
+	Files: Parent class, provides file management

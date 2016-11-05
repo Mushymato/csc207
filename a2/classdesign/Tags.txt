@@ -1,18 +1,19 @@
 +Class Tags
 -----Attribute-----
 #PREFIX: String
--tagList: java.util.list<String>
+-tagList: java.util.HashMap<String, Image>
 -tagListPath: String
 ------Methods------
-+Tags(File tags): void
-+writeTagList(): void
-+getTagList(): java.util.list
++Tags(String path): void
++addTag(String tag): boolean
++tagImage(String tag, Image img): boolean
++writeTagList(): boolean
 
 Responsibilities
 	Track what tags have been used
 	Add new tags to list of previously used tags
-	Save list of tags as .txt file each time a new tag is created
-	Read list of tags from .txt file on initialization
+	Save list of tags as .tags file each time a new tag is created
+	Read list of tags from .tags file on initialization
 Collaborators
 	Image
 	GUI

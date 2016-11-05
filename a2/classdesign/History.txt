@@ -1,18 +1,17 @@
 +Class History
 -----Attribute-----
 -log: java.util.TreeMap<String. String>
--logPath: String
 ------Methods------
 +History(): void
 +change(): void
 +unChange(): String
 +unChange(Timestamp time): String
-+writeLog(): void
++writeLog(String path): void
 
 Responsiblities
-	Load log file from on initialization
+	Load .log file from on initialization
 	Track name changes of file
-	Write changelog to disk
+	Write changelog to disk as .log file
 	Return most recent change
 	Return change made at specified time
 Collaborators
