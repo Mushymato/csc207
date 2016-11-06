@@ -1,11 +1,13 @@
 +Class History
 -----Attribute-----
--log: java.util.TreeMap<String. String>
+-log: java.util.HashMap<String. String>
+-logPath: String
 ------Methods------
-+History(): void
-+change(): void
++History(Image img): void
++newChange(String newChange): void
 +unChange(): String
-+unChange(Timestamp time): String
++unChange(long time): String
++unChange(String time): String
 +writeLog(String path): void
 
 Responsiblities

@@ -1,52 +1,55 @@
 package a2;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
 
+/**
+ * Manage known tags and track what tags have been used for which images Consist
+ * solely of static attributes and methods, should not be instantiated
+ */
 public class Tags {
 
 	/** Prefix of a tag */
-	static String PREFIX = "@";
-	/** Maps tag to set of images with that tag */
-	private HashMap<String, HashSet<String>> tagMap = new HashMap<String, HashSet<String>>();
-	/** Location of the .tag file */
-	private String tagMapPath;
+	public static String PREFIX = "@";
+	/** Set of tags */
+	public static HashSet<String> tagSet = new HashSet<String>();
+	/** Location of the tags file */
+	private static String tagSetPath = "data/tags";
 
 	/**
-	 * Initialize Tags from a .tag file Read and add each line as a tag
+	 * Load tags from the tags file Read and add each line as a tag. Each line is
+	 * one single tag
 	 * 
 	 * @param path
 	 *            Path of the .tag file
+	 * @throws FileNotFoundException
+	 *             If there is no file at the specified path.
 	 */
-	Tags(String path) {
-		String colon = ":";
-		String comma = ",";
+	public static void loadTags() throws FileNotFoundException {
 		String line = "";
+		// Reader to load file
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(new FileReader(path));
-			this.tagMapPath = path;
+			// Attempt to read from file
+			br = new BufferedReader(new FileReader(tagSetPath));
 			while ((line = br.readLine()) != null) {
-				int div = line.indexOf(colon);
-				if (div != -1) {
-					String tag = line.substring(0, div);
-					HashSet<String> imgPaths = new HashSet<String>(Arrays.asList(line.substring(div).split(comma)));
-					tagMap.put(tag, imgPaths);
-				}
+				// Parse each line to a tag
+				tagSet.add(line.trim());
 			}
-		} catch (Exception e) {
+		} catch (FileNotFoundException e){
+			Tags.writeTagList();
+		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
+			// Make sure to close the reader
 			if (br != null) {
 				try {
 					br.close();
-				} catch (Exception e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -59,78 +62,20 @@ public class Tags {
 	 * @param tag
 	 * @return true if new tag successfully added
 	 */
-	public boolean addTag(String tag) {
-		if (tagMap.containsKey(tag)) {
-			return false;
-		} else {
-			tagMap.put(tag, new HashSet<String>());
-			return true;
-		}
+	public static boolean addTag(String tag) {
+		return tagSet.add(tag);
 	}
 
 	/**
-	 * Add a new image to a existing tag in tagMap
-	 * 
-	 * @param img
-	 *            the Image object to be tagged
-	 * @return true if image successfully tagged
+	 * Write tags to a .tag file
 	 */
-	public boolean tagImage(String tag, Image img) {
-		if (tagMap.containsKey(tag)) {
-			try {
-				tagMap.get(tag).add(img.getCanonicalPath());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Returns an string array containing all the tags. Any changes to the array
-	 * will not be reflected.
-	 * 
-	 * @return string[] tags
-	 */
-	public String[] getTags() {
-		return (String[]) tagMap.keySet().toArray();
-	}
-	
-	public HashSet<String> getTags(Image img){
-		HashSet<String> imgTags = new HashSet<String>();
-		try{
-			String path = img.getCanonicalPath();
-			for (Map.Entry<String, HashSet<String>> tag : tagMap.entrySet()) {
-				if(tag.getValue().contains(path)){
-					imgTags.add(tag.getKey());
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
-		return null;
-	}
-
-	public void writeTagList() {
-		String colon = ":";
-		String comma = ",";
+	public static void writeTagList() {
 		PrintWriter wr = null;
 		try {
-			wr = new PrintWriter(tagMapPath, "UTF-8");
-			for (Map.Entry<String, HashSet<String>> tag : tagMap.entrySet()) {
-				wr.write(tag.getKey());
-				wr.write(colon);
-				int count = tag.getValue().size() - 1;
-				for (String img : tag.getValue()) {
-					wr.write(img);
-					if(count > 0){
-						wr.write(comma);
-						count -= 1;
-					}
-				}
+			wr = new PrintWriter(tagSetPath, "UTF-8");
+			for (String tag : tagSet) {
+				wr.write(tag);
+				wr.write("\n");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -143,6 +88,5 @@ public class Tags {
 				}
 			}
 		}
-
 	}
 }

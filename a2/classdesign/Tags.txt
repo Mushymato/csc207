@@ -1,12 +1,10 @@
 +Class Tags
 -----Attribute-----
 #PREFIX: String
--tagList: java.util.HashMap<String, Image>
++tagSet: java.util.HashMap<String, Image>
 -tagListPath: String
 ------Methods------
 +Tags(String path): void
-+addTag(String tag): boolean
-+tagImage(String tag, Image img): boolean
 +writeTagList(): boolean
 
 Responsibilities

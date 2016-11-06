@@ -1,14 +1,17 @@
 public Class Image extends File
 -----Attribute-----
-+tags: java.util.HashSet<String>
+-tags: java.util.HashSet<String>
 -log: History
 ------Methods------
-+Image: void
-+Image(String path): void
++Image(String path, HashSet<String> tags): void
+-updateTags(): void
 +newTag(String tag): boolean
 +delTag(String tag): boolean
-+revertName(): void
-+revertName(Timestamp time): void
++getTags(): java.util.HashSet<String>
++revertName(): boolean
++revertName(Long time): boolean
++revertName(String time): boolean
+
 
 Responsibilities:
 	Manage tags addtion/removal
