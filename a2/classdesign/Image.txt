@@ -1,5 +1,6 @@
-public Class Image extends File
+public Class Image
 -----Attribute-----
+-imgFile: java.io.File
 -tags: java.util.HashSet<String>
 -log: History
 ------Methods------

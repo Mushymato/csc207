@@ -5,12 +5,11 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashSet;
 
-// Image will not be serialized
-@SuppressWarnings("serial")
 /** Manages an image file and tag add/remove operations */
-public class Image extends File {
+public class Image {
+	private File imgFile;
 	/** Tags associated with this image file */
-	private HashSet<String> tags;
+	public HashSet<String> tags;
 	/** Change log associated with this image file */
 	private History log;
 
@@ -21,22 +20,29 @@ public class Image extends File {
 	 *            Path to the image file
 	 */
 	public Image(String path) {
-		super(path);
+		imgFile = new File(path);
 		this.log = new History(this);
 		this.updateTags();
 	}
-	
-	private void updateTags(){
+
+	private void updateTags() {
 		String dot = ".";
-		String tagsInName = this.getName();
+		String tagsInName = imgFile.getName();
 		try {
 			tagsInName = tagsInName.substring(tagsInName.indexOf(Tags.PREFIX) + 1, tagsInName.indexOf(dot));
 			tags = new HashSet<String>(Arrays.asList(tagsInName.split(Tags.PREFIX)));
-		} catch (IndexOutOfBoundsException e) {
+			for (String tag : tags) {
+				Tags.addTag(tag);
+			}
+		} catch (StringIndexOutOfBoundsException e) {
 			tags = new HashSet<String>();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String getName(){
+		return imgFile.getName();
 	}
 
 	/**
@@ -45,18 +51,32 @@ public class Image extends File {
 	 * @return
 	 */
 	public String imageName() {
-		String name = this.getName();
-		return name.substring(0, name.indexOf(Tags.PREFIX));
+		String name = imgFile.getName();
+		try {
+			return name.substring(0, name.indexOf(Tags.PREFIX));
+		} catch (StringIndexOutOfBoundsException e) {
+			try {
+				return name.substring(0, name.indexOf("."));
+			} catch (StringIndexOutOfBoundsException eh) {
+				return name;
+			}
+		}
 	}
 
 	public boolean newTag(String tag) {
 		if (tags.add(tag)) {
-			String dot = ".";
-			String newName = this.getName();
-			newName = newName.substring(0, newName.indexOf(dot)) + Tags.PREFIX + tag;
-			// TODO: Update History
+			String dot = "\\.";
+			String path =  imgFile.getAbsolutePath();
+			String[] nameAndExtension = path.split(dot);
+			String newName = nameAndExtension[0] + Tags.PREFIX + tag + "." + nameAndExtension[1];
 			Tags.tagSet.add(tag);
-			return this.renameTo(new File(newName));
+			File newFile = new File(newName);
+			boolean success = imgFile.renameTo(newFile);
+			if(success){
+				imgFile = newFile;
+				log.newChange(this.getName());
+			}
+			return success;
 		} else {
 			return false;
 		}
@@ -64,13 +84,17 @@ public class Image extends File {
 
 	public boolean delTag(String tag) {
 		if (tags.contains(tag)) {
-			String dot = ".";
-			String newName = this.getName();
-			newName = newName.substring(0, newName.indexOf(dot));
+			String newName = imgFile.getAbsolutePath();
 			newName.replaceFirst(Tags.PREFIX + tag, "");
-			// TODO: Update History
+			log.newChange(newName);
 			tags.remove(tag);
-			return this.renameTo(new File(newName));
+			File newFile = new File(newName);
+			if(imgFile.renameTo(newFile)){
+				imgFile = newFile;
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -79,18 +103,30 @@ public class Image extends File {
 	public boolean revertName() {
 		String name = log.unChange();
 		if (name != null) {
-			this.renameTo(new File(name));
+			File newFile = new File(name);
+			imgFile.renameTo(newFile);
+			if(imgFile.renameTo(newFile)){
+				imgFile = newFile;
+			}else{
+				return false;
+			}
 			this.updateTags();
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
-	public boolean revertName(Timestamp time){
+
+	public boolean revertName(Timestamp time) {
 		String name = log.unChange(time);
-		if (name != null){
-			this.renameTo(new File(name));
+		if (name != null) {
+			File newFile = new File(name);
+			imgFile.renameTo(newFile);
+			if(imgFile.renameTo(newFile)){
+				imgFile = newFile;
+			}else{
+				return false;
+			}
 			this.updateTags();
 			return true;
 		} else {

@@ -26,16 +26,15 @@ public class Tags {
 	 * 
 	 * @param path
 	 *            Path of the .tag file
-	 * @throws FileNotFoundException
-	 *             If there is no file at the specified path.
 	 */
-	public static void loadTags() throws FileNotFoundException {
+	public static void loadTags(/*String tagSetPath*/){
 		String line = "";
 		// Reader to load file
 		BufferedReader br = null;
 		try {
 			// Attempt to read from file
 			br = new BufferedReader(new FileReader(tagSetPath));
+			/*Tags.tagSetPath = tagSetPath;*/
 			while ((line = br.readLine()) != null) {
 				// Parse each line to a tag
 				tagSet.add(line.trim());
@@ -63,7 +62,12 @@ public class Tags {
 	 * @return true if new tag successfully added
 	 */
 	public static boolean addTag(String tag) {
-		return tagSet.add(tag);
+		if(tagSet.add(tag)){
+			Tags.writeTagList();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**

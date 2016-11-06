@@ -20,7 +20,7 @@ public class History {
 	 * @param img
 	 */
 	History(Image img) {
-		logPath += img.imageName().substring(0);
+		logPath += img.imageName();
 		logPath += ".log";
 		String line = "";
 		String vbar = "|";
@@ -56,6 +56,7 @@ public class History {
 			currTime.setTime(currTime.getTime() + 1);
 		}
 		log.put(currTime, change);
+		this.writeLog();
 	}
 
 	public String unChange() {
@@ -65,6 +66,7 @@ public class History {
 		}
 		String revert = log.lastEntry().getValue();
 		log.put(currTime, revert);
+		this.writeLog();
 		return revert;
 	}
 
@@ -76,6 +78,7 @@ public class History {
 		try {
 			String revert = log.get(time);
 			log.put(currTime, revert);
+			this.writeLog();
 			return revert;
 		} catch (NullPointerException e) {
 			return null;
