@@ -1,0 +1,24 @@
++Class PhotoRenamer
+-----Attribute-----
+-images: java.util.ArrayList<Image>
+------Methods------
++PhotoRenamer(String imagePaths)
++listImage(): java.util.ArrayList<Image>
++listImageByTags(String... tag): java.util.ArrayList<Image>
++newImage(Image img): boolean
++writeImagePaths(): void
++toString(): String
++main(): void
+
+Responsibilities:
+	Load list of known Image objects from file
+	Provide a command line interface that can:
+		Load image by path
+		Add/delete tags for an image
+		List all tags of an image
+		List all images under a tag
+		Revert changes
+	Write list of known Image objects to file
+Collaborators:
+	Image: Manage tag changes for a particular image
+	Tags: Manage known tags

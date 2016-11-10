@@ -16,7 +16,7 @@ public class Tags {
 	/** Prefix of a tag */
 	public static String PREFIX = "@";
 	/** Set of tags */
-	public static HashSet<String> tagSet = new HashSet<String>();
+	private static HashSet<String> tagSet = new HashSet<String>();
 	/** Location of the tags file */
 	private static String tagSetPath = "data/tags";
 
@@ -68,6 +68,10 @@ public class Tags {
 		} else {
 			return false;
 		}
+	}
+	
+	public static HashSet<String> getTags(){
+		return new HashSet<String>(tagSet);
 	}
 
 	/**

@@ -35,6 +35,7 @@ public class History {
 				log.put(time, name);
 			}
 		} catch (FileNotFoundException e) {
+			this.newChange(img.getName());
 			this.writeLog();
 		} catch (IOException e) {
 			e.printStackTrace();

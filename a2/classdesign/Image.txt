@@ -21,4 +21,4 @@ Responsibilities:
 Collaborators
 	History: track file name changes
 	Tags: track previously used tags
-	Files: Parent class, provides file management
+	PhotoRenamer

@@ -1,11 +1,12 @@
 +Class Tags
 -----Attribute-----
 #PREFIX: String
-+tagSet: java.util.HashMap<String, Image>
--tagListPath: String
++tagSet: java.util.HashSet<String>
+-tagSetPath: String
 ------Methods------
-+Tags(String path): void
-+writeTagList(): boolean
++loadTags(String path): void
++addTag(String tag): boolean
++writeTagList(): void
 
 Responsibilities
 	Track what tags have been used
@@ -15,3 +16,4 @@ Responsibilities
 Collaborators
 	Image
 	GUI
+	PhotoRenamer

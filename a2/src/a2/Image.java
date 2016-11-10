@@ -1,6 +1,7 @@
 package a2;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,10 +20,14 @@ public class Image {
 	 * @param path
 	 *            Path to the image file
 	 */
-	public Image(String path) {
+	public Image(String path) throws FileNotFoundException{
 		imgFile = new File(path);
-		this.log = new History(this);
-		this.updateTags();
+		if (imgFile.exists()){
+			this.log = new History(this);
+			this.updateTags();
+		} else {
+			throw new FileNotFoundException(path+ " does not exist.");
+		}
 	}
 
 	private void updateTags() {
@@ -44,9 +49,13 @@ public class Image {
 	public String getName(){
 		return imgFile.getName();
 	}
+	
+	public String getPath(){
+		return imgFile.getAbsolutePath();
+	}
 
 	/**
-	 * Get the name of this image without tags
+	 * Get the name of this image without tags and file extensions
 	 * 
 	 * @return
 	 */
@@ -69,7 +78,7 @@ public class Image {
 			String path =  imgFile.getAbsolutePath();
 			String[] nameAndExtension = path.split(dot);
 			String newName = nameAndExtension[0] + Tags.PREFIX + tag + "." + nameAndExtension[1];
-			Tags.tagSet.add(tag);
+			Tags.addTag(tag);
 			File newFile = new File(newName);
 			boolean success = imgFile.renameTo(newFile);
 			if(success){
@@ -86,11 +95,11 @@ public class Image {
 		if (tags.contains(tag)) {
 			String newName = imgFile.getAbsolutePath();
 			newName.replaceFirst(Tags.PREFIX + tag, "");
-			log.newChange(newName);
 			tags.remove(tag);
 			File newFile = new File(newName);
 			if(imgFile.renameTo(newFile)){
 				imgFile = newFile;
+				log.newChange(newName);
 				return true;
 			} else {
 				return false;
@@ -106,12 +115,13 @@ public class Image {
 			File newFile = new File(name);
 			imgFile.renameTo(newFile);
 			if(imgFile.renameTo(newFile)){
+				log.newChange(name);
 				imgFile = newFile;
+				this.updateTags();
+				return true;
 			}else{
 				return false;
 			}
-			this.updateTags();
-			return true;
 		} else {
 			return false;
 		}
@@ -124,11 +134,12 @@ public class Image {
 			imgFile.renameTo(newFile);
 			if(imgFile.renameTo(newFile)){
 				imgFile = newFile;
+				log.newChange(name);
+				this.updateTags();
+				return true;
 			}else{
 				return false;
 			}
-			this.updateTags();
-			return true;
 		} else {
 			return false;
 		}

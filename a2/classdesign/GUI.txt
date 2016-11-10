@@ -1,11 +1,8 @@
-+Class GraphicUserInterface implements serializable
++Class GraphicUserInterface
 -----Attribute-----
-+frame: JFrame;
--img: java.util.ArrayList<Image>
--serialVersionUID: long
--tagsPath;
++frame: JFrame
 ------Methods------
--graphicUserInterface(): void
++main(): void
 
 Responsibilities
 	load serialized program state
