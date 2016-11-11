@@ -9,8 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.Map;
-
+/** 
+ * Records name changes of an Image. Writes these changes to a .log file. Implements closable.
+ */
 public class History implements Closeable {
 
 	/** A HasMap that maps a Timestamp to a name change (String). */
@@ -78,7 +79,8 @@ public class History implements Closeable {
 			e.printStackTrace();
 		}
 	}
-	/** Helper function which converts a Timestamp and a string to the format of a single ling in
+	/** 
+	 * Helper function which converts a Timestamp and a string to the format of a single ling in
 	 * the .log file.
 	 * 
 	 * @param time
@@ -91,7 +93,8 @@ public class History implements Closeable {
 		String vbar = "|";
 		return time.toString() + vbar + change + "\n";
 	}
-	/** Add a newChange to History. Put change into HashMap<Timestamp, String> log. Then write change
+	/** 
+	 * Add a newChange to History. Put change into HashMap<Timestamp, String> log. Then write change
 	 * to logFile. 
 	 * 
 	 * @param change
@@ -110,6 +113,12 @@ public class History implements Closeable {
 		}
 	}
 
+	/** 
+	 * Reverts to the second most recent change. Does not delete the change
+	 * TODO: fix this shit. should be second most change
+	 * 
+	 * @return
+	 */
 	public String unChange() {
 		Timestamp currTime = new Timestamp(System.currentTimeMillis());
 		while (log.containsKey(currTime)) {
@@ -133,7 +142,14 @@ public class History implements Closeable {
 			return null;
 		}
 	}
-
+	/** 
+	 * Reverts to the change made at the specified Timestamp. Does not delete log entries, just adds
+	 * a new one with the reverting change.
+	 * 
+	 * @param time
+	 * 		The specified time. 
+	 * @return the reverted change, or null if no change occurs at time
+	 */
 	public String unChange(Timestamp time) {
 		String revert = log.get(time);
 		if (revert == null) {
@@ -152,7 +168,10 @@ public class History implements Closeable {
 			return null;
 		}
 	}
-
+	/** Moves the log file to logDir as specified by PhotoRenamer.
+	 * 
+	 * @return true iff logFile is successfully moved 
+	 */
 	public boolean moveLog() {
 		String logPath = PhotoRenamer.logDir + this.imgName + ".log";
 		File newLocation = new File(logPath);
@@ -168,6 +187,7 @@ public class History implements Closeable {
 	public void close() {
 		log = null;
 		logFile = null;
+		imgName = null;
 		if (bw != null) {
 			try {
 				bw.close();

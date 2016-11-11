@@ -27,7 +27,6 @@ public class Tags {
 	 */
 	public static void load() {
 		tagFile = new File(PhotoRenamer.tagsPath);
-		String line = "";
 		if (!tagFile.exists()) {
 			try {
 				tagFile.createNewFile();
@@ -36,11 +35,11 @@ public class Tags {
 			}
 		}
 
+		String line = "";
 		BufferedReader br = null;
 		try {
 			// Attempt to read from file
 			br = new BufferedReader(new FileReader(tagFile));
-			/* Tags.tagSetPath = tagSetPath; */
 			while ((line = br.readLine()) != null) {
 				// Parse each line to a tag
 				tagSet.add(line.trim());
@@ -68,11 +67,17 @@ public class Tags {
 	public static boolean addTag(String tag) {
 		return tagSet.add(tag);
 	}
-
+	/**
+	 * Return a copy of tagSet.
+	 * @return HashSet of all the tags.
+	 */
 	public HashSet<String> getTags() {
 		return new HashSet<String>(tagSet);
 	}
-
+	/** 
+	 * Write all the tags to the tag file.
+	 * TODO: verify FileWriter clears file
+	 */
 	public static void writeTags(){
 		FileWriter fw;
 		BufferedWriter bw = null;
@@ -94,7 +99,6 @@ public class Tags {
 				try {
 					bw.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
