@@ -13,16 +13,22 @@ import java.util.Map;
 
 public class History implements Closeable {
 
+	/** A HasMap that maps a Timestamp to a name change (String). */
 	private HashMap<Timestamp, String> log = new HashMap<Timestamp, String>();
+	/** The files in which changes are recorded. */
 	private File logFile;
-	/* A BufferedWriter kept open as long as this instance is open */
+	/** A BufferedWriter kept open as long as this instance is open. */
 	private BufferedWriter bw;
+	/** Name of the Image this History instance is associated with. */
 	private String imgName;
 
 	/**
-	 * Initialize
+	 * Initialize a new History object for Image img. The constructor will store the name
+	 * of img, and if there exists a corresponding .log file in log directory defined in
+	 * PhotoRenamer the constructor will attempt to read from this existing file. Otherwise,
+	 * a new file is created, with log recording the current name of img as the first change. 
 	 * 
-	 * @param img
+	 * @param img The Image object to be associated with this instance of History.
 	 */
 	History(Image img) {
 		this.imgName = img.imageName();
