@@ -64,7 +64,7 @@ public class Tags {
 	 * @param tag
 	 * @return true if new tag successfully added
 	 */
-	public static boolean addTag(String tag) {
+	public static boolean newTag(String tag) {
 		return tagSet.add(tag);
 	}
 	/**

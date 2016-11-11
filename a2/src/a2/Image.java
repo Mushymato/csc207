@@ -43,6 +43,7 @@ public class Image implements Closeable{
 		try {
 			tagsInName = tagsInName.substring(tagsInName.indexOf(Tags.PREFIX) + 1, tagsInName.indexOf(dot));
 			tags = new HashSet<String>(Arrays.asList(tagsInName.split(Tags.PREFIX)));
+			// TODO: no need for set here
 			for (String tag : tags) {
 				this.addTag(tag.trim());
 			}
@@ -52,11 +53,20 @@ public class Image implements Closeable{
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Get the name of the image.
+	 * @return
+	 * 		Name of the image file
+	 */
 	public String getName(){
 		return imgFile.getName();
 	}
 	
+	/**
+	 * Get canonical path, and return it if it exists. Otherwise return the absolute path.
+	 * @return
+	 * 		Path the to imgFile.
+	 */
 	public String getPath(){
 		try {
 			return imgFile.getCanonicalPath();
@@ -83,13 +93,20 @@ public class Image implements Closeable{
 		}
 	}
 
+	/**
+	 * Insert a tag into the imgName. Add the tag to 
+	 * @param tag
+	 * 		The tag to be added to imgName
+	 * @return
+	 * 		Whether a tag was successfully added to imgName.
+	 */
 	public boolean addTag(String tag) {
-		if (tags.add(tag)) {
+		if (tags.add(tag)) {	q
 			String dot = "\\.";
 			String path =  this.getPath();
 			String[] nameAndExtension = path.split(dot);
 			String newName = nameAndExtension[0] + Tags.PREFIX + tag + "." + nameAndExtension[1];
-			Tags.addTag(tag);
+			Tags.newTag(tag);
 			File newFile = new File(newName);
 			boolean success = imgFile.renameTo(newFile);
 			if(success){
