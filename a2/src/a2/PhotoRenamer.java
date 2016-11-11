@@ -181,15 +181,15 @@ public class PhotoRenamer implements Closeable {
 			System.out.println("3. List images by tag");
 			System.out.println("4. Add tag to image");
 			System.out.println("5. Delete tag from image");
-			System.out.println("6. Undo last change");
-			System.out.println("7. Revert change to time");
+			System.out.println("6. Revert to last change");
+			System.out.println("7. Revert to specific change");
 			System.out.println("8. Settings");
 			System.out.println("0. Exit program");
 			System.out.print("Enter your selection: ");
 			key = input.nextInt();
 			// TODO: finish this shit
 			switch (key) {
-			case 1:
+			case 1: // Add new image
 				do {
 					yn = "n";
 					System.out.print("Enter image file path: ");
@@ -199,10 +199,10 @@ public class PhotoRenamer implements Closeable {
 					yn = input.nextLine();
 				} while (yn.matches("y"));
 				break;
-			case 2:
+			case 2: // List images
 				System.out.println(pr);
 				break;
-			case 3:
+			case 3: // Add tag to image
 				ArrayList<String> tags = new ArrayList<String>();
 				do {
 					yn = "n";
@@ -213,7 +213,7 @@ public class PhotoRenamer implements Closeable {
 				} while (yn.matches("y"));
 				System.out.println(PhotoRenamer.toString(pr.listImageByTags(tags)));
 				break;
-			case 4:
+			case 4: // Delete tag from image
 				do {
 					yn = "n";
 					System.out.println(pr);
@@ -235,7 +235,7 @@ public class PhotoRenamer implements Closeable {
 					yn = input.nextLine();
 				} while (yn.matches("y"));
 				break;
-			case 5:
+			case 5: // Delete tags
 				do {
 					yn = "n";
 					System.out.println(pr);
@@ -259,22 +259,36 @@ public class PhotoRenamer implements Closeable {
 					yn = input.nextLine();
 				} while (yn.matches("y"));
 				break;
-			case 6:
+			case 6: // Revert to last change
+			case 7: // Revert to specific change
 				do {
 					yn = "n";
 					System.out.println(pr);
 					System.out.print("Select image: ");
 					int idx = input.nextInt();
 					Image chosen = pr.images.get(idx);
+					boolean success;
+					if (key == 6) {
+						success = chosen.revertName(2);
+					} else {
+						System.out.println("How many steps to undo?");
+						int steps = input.nextInt();
+						success = chosen.revertName(steps);
+					}
+					if (success) {
+						System.out.println("Successfully reverted image name to " + chosen.getName());
+					} else {
+						System.out.println("Revert unsucessful.");
+					}
 					System.out.println("Choose another image? y/n");
 					yn = input.nextLine();
 				} while (yn.matches("y"));
 				break;
-			case 7:
+			case 8: // Settings
+				/*TODO: change tags file path, change log dir, clear data(remove all tags)
+				*/
 				break;
-			case 8:
-				break;
-			case 0:
+			case 0: // Exit program
 				break;
 			}
 		} while (key != 0);

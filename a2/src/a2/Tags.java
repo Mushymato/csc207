@@ -76,7 +76,6 @@ public class Tags {
 	}
 	/** 
 	 * Write all the tags to the tag file.
-	 * TODO: verify FileWriter clears file
 	 */
 	public static void writeTags(){
 		FileWriter fw;

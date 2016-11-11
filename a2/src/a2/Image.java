@@ -120,8 +120,8 @@ public class Image implements Closeable{
 		}
 	}
 
-	public boolean revertName() {
-		String name = log.unChange();
+	public boolean revertName(int n) {
+		String name = log.unChange(n);
 		if (name != null) {
 			File newFile = new File(name);
 			imgFile.renameTo(newFile);
