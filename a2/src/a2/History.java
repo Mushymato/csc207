@@ -28,21 +28,22 @@ public class History implements Closeable {
 	 * PhotoRenamer the constructor will attempt to read from this existing file. Otherwise,
 	 * a new file is created, with log recording the current name of img as the first change. 
 	 * 
-	 * @param img The Image object to be associated with this instance of History.
+	 * @param img
+	 * 		The Image object to be associated with this instance of History.
 	 */
 	History(Image img) {
-		this.imgName = img.imageName();
+		this.imgName = img.imageName(); // store name
 		String logPath = PhotoRenamer.logDir + this.imgName + ".log";
 		logFile = new File(logPath);
+		// check if file exists at logPath
 		if (!logFile.exists()) {
 			try {
 				logFile.createNewFile();
-				this.newChange(img.getName());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		} else {
-			String line = "";
+			String line;
 			String vbar = "|";
 			BufferedReader br = null;
 			try {
@@ -66,25 +67,36 @@ public class History implements Closeable {
 					}
 				}
 			}
-
 		}
 		FileWriter fw;
 		try {
 			fw = new FileWriter(logFile);
 			bw = new BufferedWriter(fw);
-			for (Map.Entry<Timestamp, String> line : log.entrySet()) {
-				bw.write(History.line(line.getKey(), line.getValue()));
-			}
+			//TODO: Better logic
+			this.newChange(img.getName());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	/** Helper function which converts a Timestamp and a string to the format of a single ling in
+	 * the .log file.
+	 * 
+	 * @param time
+	 * 		A Timestamp
+	 * @param change
+	 * 		A change represented by a String
+	 * @return A formatted line for a .log file
+	 */
 	private static String line(Timestamp time, String change) {
 		String vbar = "|";
 		return time.toString() + vbar + change + "\n";
 	}
-
+	/** Add a newChange to History. Put change into HashMap<Timestamp, String> log. Then write change
+	 * to logFile. 
+	 * 
+	 * @param change
+	 * 		Change to be recorded to logFile.
+	 */
 	public void newChange(String change) {
 		Timestamp currTime = new Timestamp(System.currentTimeMillis());
 		while (log.containsKey(currTime)) {
