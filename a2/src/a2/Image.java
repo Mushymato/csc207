@@ -10,6 +10,7 @@ import java.util.HashSet;
 
 /** Manages an image file and tag add/remove operations */
 public class Image implements Closeable{
+	/** Location of the image file*/ 
 	private File imgFile;
 	/** Tags associated with this image file */
 	public HashSet<String> tags;
@@ -32,6 +33,10 @@ public class Image implements Closeable{
 		}
 	}
 
+	/**
+	 * Reads Tags from the name of imgFile. Based Tags.PREFIX. It is assumed that tags are contained
+	 * after the first instance of Tags.PREFIX.
+	 */
 	private void updateTags() {
 		String dot = ".";
 		String tagsInName = imgFile.getName();
@@ -39,7 +44,7 @@ public class Image implements Closeable{
 			tagsInName = tagsInName.substring(tagsInName.indexOf(Tags.PREFIX) + 1, tagsInName.indexOf(dot));
 			tags = new HashSet<String>(Arrays.asList(tagsInName.split(Tags.PREFIX)));
 			for (String tag : tags) {
-				Tags.addTag(tag);
+				this.addTag(tag.trim());
 			}
 		} catch (StringIndexOutOfBoundsException e) {
 			tags = new HashSet<String>();
