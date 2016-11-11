@@ -219,11 +219,11 @@ public class PhotoRenamer implements Closeable {
 					System.out.println(pr);
 					System.out.print("Select image: ");
 					int idx = input.nextInt();
-					do{
+					do {
 						yn = "n";
 						System.out.print("Enter a tag: ");
 						String tag = input.nextLine();
-						if(pr.images.get(idx).addTag(tag)){
+						if (pr.images.get(idx).addTag(tag)) {
 							System.out.println("Tag added.");
 						} else {
 							System.out.println("Add tag unsuccessful.");
@@ -241,13 +241,13 @@ public class PhotoRenamer implements Closeable {
 					System.out.println(pr);
 					System.out.print("Select image: ");
 					int idx = input.nextInt();
-					Image chosen= pr.images.get(idx);
-					do{
+					Image chosen = pr.images.get(idx);
+					do {
 						yn = "n";
 						System.out.println(chosen.tags);
 						System.out.print("Choose a tag: ");
 						String tag = input.nextLine();
-						if(chosen.delTag(tag)){
+						if (chosen.delTag(tag)) {
 							System.out.println("Tag deleted.");
 						} else {
 							System.out.println("No such tag.");
@@ -265,7 +265,7 @@ public class PhotoRenamer implements Closeable {
 					System.out.println(pr);
 					System.out.print("Select image: ");
 					int idx = input.nextInt();
-					Image chosen= pr.images.get(idx);
+					Image chosen = pr.images.get(idx);
 					System.out.println("Choose another image? y/n");
 					yn = input.nextLine();
 				} while (yn.matches("y"));
