@@ -1,10 +1,11 @@
 package a2;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashSet;
 
 /**
@@ -14,33 +15,36 @@ import java.util.HashSet;
 public class Tags {
 
 	/** Prefix of a tag */
-	public static String PREFIX = "@";
+	public static final String PREFIX = "@";
 	/** Set of tags */
 	private static HashSet<String> tagSet = new HashSet<String>();
 	/** Location of the tags file */
-	private static String tagSetPath = "data/tags";
+	private static File tagFile;
 
 	/**
-	 * Load tags from the tags file Read and add each line as a tag. Each line is
-	 * one single tag
-	 * 
-	 * @param path
-	 *            Path of the .tag file
+	 * Load tags from the tags file Read and add each line as a tag. Each line
+	 * is one single tag
 	 */
-	public static void loadTags(/*String tagSetPath*/){
+	public static void open() {
+		tagFile = new File(PhotoRenamer.tagsPath);
 		String line = "";
-		// Reader to load file
+		if (!tagFile.exists()) {
+			try {
+				tagFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 		BufferedReader br = null;
 		try {
 			// Attempt to read from file
-			br = new BufferedReader(new FileReader(tagSetPath));
-			/*Tags.tagSetPath = tagSetPath;*/
+			br = new BufferedReader(new FileReader(tagFile));
+			/* Tags.tagSetPath = tagSetPath; */
 			while ((line = br.readLine()) != null) {
 				// Parse each line to a tag
 				tagSet.add(line.trim());
 			}
-		} catch (FileNotFoundException e){
-			Tags.writeTagList();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -62,36 +66,35 @@ public class Tags {
 	 * @return true if new tag successfully added
 	 */
 	public static boolean addTag(String tag) {
-		if(tagSet.add(tag)){
-			Tags.writeTagList();
-			return true;
-		} else {
-			return false;
-		}
+		return tagSet.add(tag);
 	}
-	
-	public static HashSet<String> getTags(){
+
+	public HashSet<String> getTags() {
 		return new HashSet<String>(tagSet);
 	}
 
-	/**
-	 * Write tags to a .tag file
-	 */
-	public static void writeTagList() {
-		PrintWriter wr = null;
+	public static void writeTags(){
+		FileWriter fw;
+		BufferedWriter bw = null;
 		try {
-			wr = new PrintWriter(tagSetPath, "UTF-8");
+			fw = new FileWriter(tagFile);
+			bw = new BufferedWriter(fw);
 			for (String tag : tagSet) {
-				wr.write(tag);
-				wr.write("\n");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (wr != null) {
 				try {
-					wr.close();
-				} catch (Exception e) {
+					bw.write(tag);
+					bw.write("\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally{
+			if(bw != null){
+				try {
+					bw.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

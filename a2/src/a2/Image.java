@@ -1,5 +1,6 @@
 package a2;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.Timestamp;
@@ -7,7 +8,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /** Manages an image file and tag add/remove operations */
-public class Image {
+public class Image implements Closeable{
 	private File imgFile;
 	/** Tags associated with this image file */
 	public HashSet<String> tags;
@@ -143,5 +144,12 @@ public class Image {
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public void close(){
+		imgFile = null;
+		tags = null;
+		log.close();
 	}
 }

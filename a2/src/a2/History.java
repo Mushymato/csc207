@@ -1,18 +1,22 @@
 package a2;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.BufferedWriter;
+import java.io.Closeable;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
-public class History {
+public class History implements Closeable{
 
-	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>();
-	private String logPath = "data/";
+	private HashMap<Timestamp, String> log = new HashMap<Timestamp, String>();
+	private File logFile;
+	/* A BufferedWriter kept open as long as this instance is open*/
+	private BufferedWriter bw;
 
 	/**
 	 * Initialize
@@ -20,35 +24,57 @@ public class History {
 	 * @param img
 	 */
 	History(Image img) {
-		logPath += img.imageName();
-		logPath += ".log";
-		String line = "";
-		String vbar = "|";
-		BufferedReader br = null;
-		try {
-			// Attempt to read from file
-			br = new BufferedReader(new FileReader(logPath));
-			while ((line = br.readLine()) != null) {
-				int div = line.indexOf(vbar);
-				Timestamp time = Timestamp.valueOf(line.substring(0, div));
-				String name = line.substring(div + 1);
-				log.put(time, name);
+		String logPath = PhotoRenamer.logDir + img.imageName() + ".log";
+		logFile = new File(logPath);
+		if (!logFile.exists()) {
+			try {
+				logFile.createNewFile();
+				this.newChange(img.getName());
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (FileNotFoundException e) {
-			this.newChange(img.getName());
-			this.writeLog();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			// Make sure to close the reader
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+		} else {
+			String line = "";
+			String vbar = "|";
+			BufferedReader br = null;
+			try {
+				// Attempt to read from file
+				br = new BufferedReader(new FileReader(logFile));
+				while ((line = br.readLine()) != null) {
+					int div = line.indexOf(vbar);
+					Timestamp time = Timestamp.valueOf(line.substring(0, div));
+					String name = line.substring(div + 1);
+					log.put(time, name);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				// Make sure to close the reader
+				if (br != null) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
+
 		}
+		FileWriter fw;
+		try {
+			fw = new FileWriter(logFile);
+			bw = new BufferedWriter(fw);
+			for (Map.Entry<Timestamp, String> line : log.entrySet()) {
+				bw.write(History.line(line.getKey(), line.getValue()));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static String line(Timestamp time, String change) {
+		String vbar = "|";
+		return time.toString() + vbar + change + "\n";
 	}
 
 	public void newChange(String change) {
@@ -57,7 +83,11 @@ public class History {
 			currTime.setTime(currTime.getTime() + 1);
 		}
 		log.put(currTime, change);
-		this.writeLog();
+		try {
+			bw.write(History.line(currTime, change));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String unChange() {
@@ -65,9 +95,21 @@ public class History {
 		while (log.containsKey(currTime)) {
 			currTime.setTime(currTime.getTime() + 1);
 		}
-		String revert = log.lastEntry().getValue();
+		
+		Timestamp mostRecent = new Timestamp(0);
+		for (Timestamp time : log.keySet()) {
+			if(time.compareTo(mostRecent) > 0){
+				mostRecent = time;
+			}
+		}
+		String revert = log.get(mostRecent);
+		
 		log.put(currTime, revert);
-		this.writeLog();
+		try {
+			bw.write(History.line(currTime, revert));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return revert;
 	}
 
@@ -79,33 +121,25 @@ public class History {
 		try {
 			String revert = log.get(time);
 			log.put(currTime, revert);
-			this.writeLog();
+			bw.write(History.line(currTime, revert));
 			return revert;
 		} catch (NullPointerException e) {
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public void writeLog() {
-		String vbar = "|";
-		PrintWriter wr = null;
-		try {
-			wr = new PrintWriter(logPath, "UTF-8");
-			for (Map.Entry<Timestamp, String> line : log.entrySet()) {
-				wr.write(line.getKey().toString());
-				wr.write(vbar);
-				wr.write(line.getValue());
-				wr.write("\n");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (wr != null) {
-				try {
-					wr.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+	@Override
+	public void close(){
+		log = null;
+		logFile = null;
+		if(bw != null){
+			try {
+				bw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

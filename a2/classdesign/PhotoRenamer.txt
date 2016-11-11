@@ -14,7 +14,7 @@ Responsibilities:
 	Load list of known Image objects from file
 	Provide a command line interface that can:
 		Load image by path
-		Add/delete tags for an image
+		Add/delete tags of an image
 		List all tags of an image
 		List all images under a tag
 		Revert changes
