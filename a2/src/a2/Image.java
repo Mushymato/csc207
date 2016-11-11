@@ -3,6 +3,7 @@ package a2;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -52,7 +53,11 @@ public class Image implements Closeable{
 	}
 	
 	public String getPath(){
-		return imgFile.getAbsolutePath();
+		try {
+			return imgFile.getCanonicalPath();
+		} catch (IOException e) {
+			return imgFile.getAbsolutePath();
+		}
 	}
 
 	/**
@@ -73,10 +78,10 @@ public class Image implements Closeable{
 		}
 	}
 
-	public boolean newTag(String tag) {
+	public boolean addTag(String tag) {
 		if (tags.add(tag)) {
 			String dot = "\\.";
-			String path =  imgFile.getAbsolutePath();
+			String path =  this.getPath();
 			String[] nameAndExtension = path.split(dot);
 			String newName = nameAndExtension[0] + Tags.PREFIX + tag + "." + nameAndExtension[1];
 			Tags.addTag(tag);
@@ -94,7 +99,7 @@ public class Image implements Closeable{
 
 	public boolean delTag(String tag) {
 		if (tags.contains(tag)) {
-			String newName = imgFile.getAbsolutePath();
+			String newName = this.getPath();
 			newName.replaceFirst(Tags.PREFIX + tag, "");
 			tags.remove(tag);
 			File newFile = new File(newName);

@@ -25,7 +25,7 @@ public class Tags {
 	 * Load tags from the tags file Read and add each line as a tag. Each line
 	 * is one single tag
 	 */
-	public static void open() {
+	public static void load() {
 		tagFile = new File(PhotoRenamer.tagsPath);
 		String line = "";
 		if (!tagFile.exists()) {

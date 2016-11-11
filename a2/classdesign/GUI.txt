@@ -1,14 +1,15 @@
 +Class GraphicUserInterface
 -----Attribute-----
-+frame: JFrame
+-frame: JFrame
+-photo: JPanel
 ------Methods------
 +main(): void
 
+-Class PhotoPanel
+
 Responsibilities
-	load serialized program state
 	Provide graphical user interface to backend methods
 	Locate image files in the file system
-	Initialize new instances of image
-	Serialize current state and save to disk on close
 Collaborators
-	Image: Manage each individual image
+	PhotoRenamer
+	Tags

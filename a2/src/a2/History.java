@@ -11,12 +11,13 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-public class History implements Closeable{
+public class History implements Closeable {
 
 	private HashMap<Timestamp, String> log = new HashMap<Timestamp, String>();
 	private File logFile;
-	/* A BufferedWriter kept open as long as this instance is open*/
+	/* A BufferedWriter kept open as long as this instance is open */
 	private BufferedWriter bw;
+	private String imgName;
 
 	/**
 	 * Initialize
@@ -24,7 +25,8 @@ public class History implements Closeable{
 	 * @param img
 	 */
 	History(Image img) {
-		String logPath = PhotoRenamer.logDir + img.imageName() + ".log";
+		this.imgName = img.imageName();
+		String logPath = PhotoRenamer.logDir + this.imgName + ".log";
 		logFile = new File(logPath);
 		if (!logFile.exists()) {
 			try {
@@ -95,47 +97,60 @@ public class History implements Closeable{
 		while (log.containsKey(currTime)) {
 			currTime.setTime(currTime.getTime() + 1);
 		}
-		
+
 		Timestamp mostRecent = new Timestamp(0);
 		for (Timestamp time : log.keySet()) {
-			if(time.compareTo(mostRecent) > 0){
+			if (time.compareTo(mostRecent) > 0) {
 				mostRecent = time;
 			}
 		}
 		String revert = log.get(mostRecent);
-		
+
 		log.put(currTime, revert);
 		try {
 			bw.write(History.line(currTime, revert));
+			return revert;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return revert;
 	}
 
 	public String unChange(Timestamp time) {
+		String revert = log.get(time);
+		if (revert == null) {
+			return null;
+		}
 		Timestamp currTime = new Timestamp(System.currentTimeMillis());
 		while (log.containsKey(currTime)) {
 			currTime.setTime(currTime.getTime() + 1);
 		}
+		log.put(currTime, revert);
 		try {
-			String revert = log.get(time);
-			log.put(currTime, revert);
 			bw.write(History.line(currTime, revert));
 			return revert;
-		} catch (NullPointerException e) {
-			return null;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
+	public boolean moveLog() {
+		String logPath = PhotoRenamer.logDir + this.imgName + ".log";
+		File newLocation = new File(logPath);
+		try {
+			this.logFile.renameTo(newLocation);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	@Override
-	public void close(){
+	public void close() {
 		log = null;
 		logFile = null;
-		if(bw != null){
+		if (bw != null) {
 			try {
 				bw.close();
 			} catch (IOException e) {

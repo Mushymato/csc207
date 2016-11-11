@@ -1,20 +1,23 @@
-+Class History
++Class History implements Closable
 -----Attribute-----
--log: java.util.HashMap<String. String>
--logPath: String
+-log: java.util.HashMap<Timestamp, String>
+-logFile: java.io.File
+-imgName: String
+-bw: java.io.BufferedWriter
 ------Methods------
 +History(Image img): void
 +newChange(String newChange): void
 +unChange(): String
-+unChange(long time): String
-+unChange(String time): String
-+writeLog(String path): void
++unChange(Timestamp time): String
++close(): void
+-line(): String
 
 Responsiblities
 	Load .log file from on initialization
 	Track name changes of file
-	Write changelog to disk as .log file
+	Write changelog to .log file as changes are made
 	Return most recent change
 	Return change made at specified time
+	Close resources
 Collaborators
 	Image

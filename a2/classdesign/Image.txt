@@ -1,4 +1,4 @@
-public Class Image
+public Class Image implements Closable
 -----Attribute-----
 -imgFile: java.io.File
 -tags: java.util.HashSet<String>
@@ -6,18 +6,22 @@ public Class Image
 ------Methods------
 +Image(String path, HashSet<String> tags): void
 -updateTags(): void
++getName(): String
++getPath(): String
++imageName(): String
 +newTag(String tag): boolean
 +delTag(String tag): boolean
 +getTags(): java.util.HashSet<String>
 +revertName(): boolean
-+revertName(Long time): boolean
-+revertName(String time): boolean
++revertName(Timestamp time): boolean
++close(): void
 
 
 Responsibilities:
 	Manage tags addtion/removal
 	Manage file name changes
 	Revert file name to previous name(s)
+	Pass information about the file to other classes
 Collaborators
 	History: track file name changes
 	Tags: track previously used tags

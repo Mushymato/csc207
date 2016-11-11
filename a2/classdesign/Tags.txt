@@ -4,15 +4,16 @@
 +tagSet: java.util.HashSet<String>
 -tagSetPath: String
 ------Methods------
-+loadTags(String path): void
++load(String path): void
 +addTag(String tag): boolean
-+writeTagList(): void
++getTags(): java.util.HashSet<String>
++writeTags(): void
 
 Responsibilities
+	Read list of tags from the tags file
 	Track what tags have been used
 	Add new tags to list of previously used tags
-	Save list of tags as .tags file each time a new tag is created
-	Read list of tags from .tags file on initialization
+	Write to the tags file each time a new tag is created
 Collaborators
 	Image
 	GUI
