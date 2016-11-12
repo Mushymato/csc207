@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * Records name changes of an Image. Writes these changes to a .log file.
@@ -16,8 +16,8 @@ import java.util.HashMap;
  */
 public class History implements Closeable {
 
-	/** A HasMap that maps a Timestamp to a name change (String). */
-	private HashMap<Timestamp, String> log = new HashMap<Timestamp, String>();
+	/** A Map that maps a Timestamp to a name change (String). */
+	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>();
 	/** The files in which changes are recorded. */
 	private File logFile;
 	/** A BufferedWriter kept open as long as this instance is open. */
@@ -38,7 +38,7 @@ public class History implements Closeable {
 	 */
 	History(Image img) {
 		this.imgName = img.imageName(); // store name
-		String logPath = PhotoRenamer.logDir + this.imgName + ".log";
+		String logPath = PhotoRenamer.dataDirPath + this.imgName + ".log";
 		logFile = new File(logPath);
 		// check if file exists at logPath
 		FileWriter fw;
@@ -125,26 +125,24 @@ public class History implements Closeable {
 	/**
 	 * Reverts to the int nth most recent change. Does not delete
 	 * log entries, just adds a new one with the reverting change.
+	 * The bounds of n is (2, log.size). 
+	 * If n is out of bounds, revert to the very first change
 	 * 
 	 * @param n
-	 * 		Number of steps to return
+	 * 		Number of changes ago.
 	 * @return the reverted change, or null if no change occurs at time.
 	 */
 	protected String unChange(int n){
-		n = Math.min(n, log.size());
-		
-		Timestamp lastChange = new Timestamp(0);
-		int count = 0;
-		for (Timestamp time : log.keySet()) {
-			if (time.compareTo(lastChange) > 0) {
-				count += 1;
-				if(count >= n){
-					lastChange = time;
-					break;
-				}
+		if(n < 2 || n > log.size()){
+			n = log.size();
+		}
+		for (Timestamp change : log.descendingKeySet()) {
+			n -= 1;
+			if(n == 0){
+				return this.unChange(change);
 			}
 		}
-		return this.unChange(lastChange);
+		return null;
 	}
 
 	/**
@@ -162,22 +160,6 @@ public class History implements Closeable {
 		}
 		this.newChange(revert);
 		return revert;
-	}
-
-	/**
-	 * Moves the log file to logDir as specified by PhotoRenamer.
-	 * 
-	 * @return true iff logFile is successfully moved
-	 */
-	public boolean moveLog() {
-		String logPath = PhotoRenamer.logDir + this.imgName + ".log";
-		File newLocation = new File(logPath);
-		try {
-			this.logFile.renameTo(newLocation);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
 	}
 	
 	@Override

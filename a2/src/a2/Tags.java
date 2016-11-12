@@ -19,14 +19,14 @@ public class Tags {
 	/** Set of tags */
 	private static HashSet<String> tagSet = new HashSet<String>();
 	/** Location of the tags file */
-	private static File tagFile;
+	public static File tagFile;
 
 	/**
 	 * Load tags from the tags file Read and add each line as a tag. Each line
 	 * is one single tag
 	 */
 	public static void load() {
-		tagFile = new File(PhotoRenamer.tagsPath);
+		tagFile = new File(PhotoRenamer.dataDirPath + "tags.data");
 		if (!tagFile.exists()) {
 			try {
 				tagFile.createNewFile();

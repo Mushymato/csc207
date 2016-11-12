@@ -4,13 +4,12 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashSet;
 
 /** Manages an image file and tag add/remove operations */
-public class Image implements Closeable{
-	/** Location of the image file*/ 
+public class Image implements Closeable {
+	/** Location of the image file */
 	private File imgFile;
 	/** Tags associated with this image file */
 	public HashSet<String> tags;
@@ -23,19 +22,24 @@ public class Image implements Closeable{
 	 * @param path
 	 *            Path to the image file
 	 */
-	public Image(String path) throws FileNotFoundException{
+	public Image(String path) throws FileNotFoundException {
 		imgFile = new File(path);
-		if (imgFile.exists()){
-			this.log = new History(this);
-			this.updateTags();
+		// Only initialize Image if file exist, file is a File, and file name contains a '.'
+		if (imgFile.exists()) {
+			if (imgFile.isFile() && imgFile.getName().contains(".")) {
+				this.log = new History(this);
+				this.updateTags();
+			} else {
+				new FileNotFoundException(path + " is not an file.");
+			}
 		} else {
-			throw new FileNotFoundException(path+ " does not exist.");
+			throw new FileNotFoundException(path + " does not exist.");
 		}
 	}
 
 	/**
-	 * Reads Tags from the name of imgFile. Based Tags.PREFIX. It is assumed that tags are contained
-	 * after the first instance of Tags.PREFIX.
+	 * Reads Tags from the name of imgFile. Based Tags.PREFIX. It is assumed
+	 * that tags are contained after the first instance of Tags.PREFIX.
 	 */
 	private void updateTags() {
 		String dot = ".";
@@ -52,12 +56,12 @@ public class Image implements Closeable{
 			e.printStackTrace();
 		}
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return imgFile.getName();
 	}
-	
-	public String getPath(){
+
+	public String getPath() {
 		try {
 			return imgFile.getCanonicalPath();
 		} catch (IOException e) {
@@ -86,13 +90,13 @@ public class Image implements Closeable{
 	public boolean addTag(String tag) {
 		if (tags.add(tag)) {
 			String dot = "\\.";
-			String path =  this.getPath();
+			String path = this.getPath();
 			String[] nameAndExtension = path.split(dot);
 			String newName = nameAndExtension[0] + Tags.PREFIX + tag + "." + nameAndExtension[1];
 			Tags.addTag(tag);
 			File newFile = new File(newName);
 			boolean success = imgFile.renameTo(newFile);
-			if(success){
+			if (success) {
 				imgFile = newFile;
 				log.newChange(this.getName());
 			}
@@ -108,7 +112,7 @@ public class Image implements Closeable{
 			newName.replaceFirst(Tags.PREFIX + tag, "");
 			tags.remove(tag);
 			File newFile = new File(newName);
-			if(imgFile.renameTo(newFile)){
+			if (imgFile.renameTo(newFile)) {
 				imgFile = newFile;
 				log.newChange(newName);
 				return true;
@@ -125,30 +129,12 @@ public class Image implements Closeable{
 		if (name != null) {
 			File newFile = new File(name);
 			imgFile.renameTo(newFile);
-			if(imgFile.renameTo(newFile)){
+			if (imgFile.renameTo(newFile)) {
 				log.newChange(name);
 				imgFile = newFile;
 				this.updateTags();
 				return true;
-			}else{
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	public boolean revertName(Timestamp time) {
-		String name = log.unChange(time);
-		if (name != null) {
-			File newFile = new File(name);
-			imgFile.renameTo(newFile);
-			if(imgFile.renameTo(newFile)){
-				imgFile = newFile;
-				log.newChange(name);
-				this.updateTags();
-				return true;
-			}else{
+			} else {
 				return false;
 			}
 		} else {
@@ -156,8 +142,12 @@ public class Image implements Closeable{
 		}
 	}
 	
+//	public boolean moveLog(){
+//		return log.move();
+//	}
+
 	@Override
-	public void close(){
+	public void close() {
 		imgFile = null;
 		tags = null;
 		log.close();

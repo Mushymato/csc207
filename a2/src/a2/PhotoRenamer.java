@@ -15,8 +15,7 @@ public class PhotoRenamer implements Closeable {
 
 	private ArrayList<Image> images = new ArrayList<Image>();
 	private File imagesPath;
-	protected static String tagsPath = "data/tags";
-	protected static String logDir = "data/";
+	protected static String dataDirPath = "data/";
 
 	PhotoRenamer(String imagesPath) {
 		String line = "";
@@ -157,6 +156,33 @@ public class PhotoRenamer implements Closeable {
 		return str.toString();
 	}
 
+	public boolean moveData(String newDirPath) {
+		File newDir = new File(newDirPath);
+		if (newDir.exists()) {
+			newDir = new File(newDir.getAbsolutePath() + "//data");
+		}
+		File oldDir = new File(PhotoRenamer.dataDirPath);
+		return oldDir.renameTo(newDir);
+	}
+
+	public void clearData() {
+		File dataDir = new File(PhotoRenamer.dataDirPath);
+		if (dataDir.exists()) {
+			this.clearDir(dataDir);
+		}
+	}
+
+	private void clearDir(File del) {
+		if (del.isDirectory()) {
+			File[] sub = del.listFiles();
+			for (int i = 0; i < sub.length; i++) {
+				this.clearDir(del);
+			}
+		} else {
+			del.delete();
+		}
+	}
+
 	@Override
 	public void close() {
 		Tags.writeTags();
@@ -285,8 +311,14 @@ public class PhotoRenamer implements Closeable {
 				} while (yn.matches("y"));
 				break;
 			case 8: // Settings
-				/*TODO: change tags file path, change log dir, clear data(remove all tags)
-				*/
+				/*
+				 * TODO: change tags file path, change log dir, clear
+				 * data(remove all tags)
+				 */
+				System.out.println("-------Settings-------");
+				System.out.println("1. Change where data is stored");
+				System.out.println("2. Delete all data and restore file names");
+				System.out.println("");
 				break;
 			case 0: // Exit program
 				break;
