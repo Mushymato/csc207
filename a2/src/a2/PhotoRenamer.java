@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class PhotoRenamer implements Closeable {
@@ -148,8 +149,8 @@ public class PhotoRenamer implements Closeable {
 	public static String toString(ArrayList<Image> images) {
 		StringBuffer str = new StringBuffer("Images: \n");
 		for (int i = 0; i < images.size(); i++) {
-			str.append(i + ".");
-			str.append("\t");
+			str.append("[" + i + "]");
+			str.append(" ");
 			str.append(images.get(i).getName());
 			str.append("\n");
 		}
@@ -169,6 +170,9 @@ public class PhotoRenamer implements Closeable {
 		File dataDir = new File(PhotoRenamer.dataDirPath);
 		if (dataDir.exists()) {
 			this.clearDir(dataDir);
+		}
+		for (int i = 0; i < images.size(); i++) {
+			images.get(i).revertName(0);
 		}
 	}
 
@@ -203,13 +207,9 @@ public class PhotoRenamer implements Closeable {
 		do {
 			System.out.println("-----PhotoRenamer-----");
 			System.out.println("1. Add new image");
-			System.out.println("2. List images");
-			System.out.println("3. List images by tag");
-			System.out.println("4. Add tag to image");
-			System.out.println("5. Delete tag from image");
-			System.out.println("6. Revert to last change");
-			System.out.println("7. Revert to specific change");
-			System.out.println("8. Settings");
+			System.out.println("2. Manage images");
+			System.out.println("3. View images by tag");
+			System.out.println("4. Settings");
 			System.out.println("0. Exit program");
 			System.out.print("Enter your selection: ");
 			key = input.nextInt();
@@ -225,31 +225,98 @@ public class PhotoRenamer implements Closeable {
 					yn = input.nextLine();
 				} while (yn.matches("y"));
 				break;
-			case 2: // List images
-				System.out.println(pr);
-				break;
-			case 3: // Add tag to image
-				ArrayList<String> tags = new ArrayList<String>();
-				do {
-					yn = "n";
-					System.out.print("Enter a tag: ");
-					tags.add(input.nextLine());
-					System.out.println("Keep adding tags? y/n");
-					yn = input.nextLine();
-				} while (yn.matches("y"));
-				System.out.println(PhotoRenamer.toString(pr.listImageByTags(tags)));
-				break;
-			case 4: // Delete tag from image
+			case 2: // Manage images
 				do {
 					yn = "n";
 					System.out.println(pr);
 					System.out.print("Select image: ");
 					int idx = input.nextInt();
+					Image chosen = pr.images.get(idx);
+					System.out.println("--------Options-------");
+					System.out.println("1. Add Tag");
+					System.out.println("2. Remove Tag");
+					System.out.println("3. Revert to last change");
+					System.out.println("4. Revert to specified change");
+					System.out.println("5. Remove image");
+					System.out.println("Enter your selection:");
+					idx = input.nextInt();
+					switch (key) {
+					case 1: // Add tag
+						do {
+							yn = "n";
+							System.out.println("Current tags:");
+							System.out.println(chosen.tags);
+							System.out.print("Enter a tag: ");
+							String tag = input.nextLine();
+							if (chosen.addTag(tag)) {
+								System.out.println("Tag added.");
+							} else {
+								System.out.println("Add tag unsuccessful.");
+							}
+							System.out.println("Keep adding tags to this image? y/n");
+							yn = input.nextLine();
+						} while (yn.matches("y"));
+						break;
+					case 2: // Del tag
+						do {
+							yn = "n";
+							System.out.println("Current tags:");
+							System.out.println(chosen.tags);
+							System.out.print("Enter a tag: ");
+							String tag = input.nextLine();
+							if (chosen.delTag(tag)) {
+								System.out.println("Tag deleted.");
+							} else {
+								System.out.println("No such tag.");
+							}
+							System.out.println("Keep deleting tags from this image? y/n");
+							yn = input.nextLine();
+						} while (yn.matches("y"));
+						break;
+					case 3: // revert 2
+						break;
+					case 4: // revert n
+						break;
+					case 5: // remove image
+						break;
+					default:
+						break;
+					}
+					System.out.println("Choose another image? y/n");
+					yn = input.nextLine();
+				} while (yn.matches("y"));
+
+				break;
+			case 3: // Get images by tags
+				System.out.println("Current Tags:");
+				HashSet<String> currentTags = Tags.getTags();
+				for (String string : currentTags) {
+					System.out.println("\t" + string);
+				}
+
+				ArrayList<String> tags = new ArrayList<String>();
+				do {
+					yn = "n";
+					System.out.print("Enter a tag: ");
+					tags.add(input.nextLine());
+					System.out.println("Keep choosing tags? y/n");
+					yn = input.nextLine();
+				} while (yn.matches("y"));
+				System.out.println("Images tagged as: " + tags.toString());
+				System.out.println(PhotoRenamer.toString(pr.listImageByTags(tags)));
+				break;
+/*			case 4: // Add tag to image
+				do {
+					yn = "n";
+					System.out.println(pr);
+					System.out.print("Select image: ");
+					int idx = input.nextInt();
+					Image chosen = pr.images.get(idx);
 					do {
 						yn = "n";
 						System.out.print("Enter a tag: ");
 						String tag = input.nextLine();
-						if (pr.images.get(idx).addTag(tag)) {
+						if (chosen.addTag(tag)) {
 							System.out.println("Tag added.");
 						} else {
 							System.out.println("Add tag unsuccessful.");
@@ -261,7 +328,7 @@ public class PhotoRenamer implements Closeable {
 					yn = input.nextLine();
 				} while (yn.matches("y"));
 				break;
-			case 5: // Delete tags
+			case 5: // Delete tags from image
 				do {
 					yn = "n";
 					System.out.println(pr);
@@ -285,7 +352,7 @@ public class PhotoRenamer implements Closeable {
 					yn = input.nextLine();
 				} while (yn.matches("y"));
 				break;
-			case 6: // Revert to last change
+*/			case 6: // Revert to last change
 			case 7: // Revert to specific change
 				do {
 					yn = "n";
@@ -310,17 +377,18 @@ public class PhotoRenamer implements Closeable {
 					yn = input.nextLine();
 				} while (yn.matches("y"));
 				break;
-			case 8: // Settings
+			case 4: // Settings
 				/*
 				 * TODO: change tags file path, change log dir, clear
 				 * data(remove all tags)
 				 */
 				System.out.println("-------Settings-------");
 				System.out.println("1. Change where data is stored");
-				System.out.println("2. Delete all data and restore file names");
-				System.out.println("");
+				System.out.println("2. Delete all tags and restore file names");
+				System.out.println("3. Delete all data");
 				break;
 			case 0: // Exit program
+			default:
 				break;
 			}
 		} while (key != 0);

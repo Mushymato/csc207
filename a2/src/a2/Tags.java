@@ -71,7 +71,7 @@ public class Tags {
 	 * Return a copy of tagSet.
 	 * @return HashSet of all the tags.
 	 */
-	public HashSet<String> getTags() {
+	public static HashSet<String> getTags() {
 		return new HashSet<String>(tagSet);
 	}
 	/** 
