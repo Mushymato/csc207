@@ -108,7 +108,7 @@ public class PhotoRenamer implements Closeable {
 
 	public String addImage(String imgPath) {
 		for (int i = 0; i < images.size(); i++) {
-			if (images.get(i).getPath() == imgPath) {
+			if (images.get(i).getPath().equals(imgPath)) {
 				return "Image has already been added.";
 			}
 		}
@@ -158,18 +158,11 @@ public class PhotoRenamer implements Closeable {
 	}
 
 	public String toString() {
-		StringBuffer str = new StringBuffer("Images: \n");
-		for (int i = 0; i < images.size(); i++) {
-			str.append(i + ".");
-			str.append("\t");
-			str.append(images.get(i).getName());
-			str.append("\n");
-		}
-		return str.toString();
+		return PhotoRenamer.toString(images);
 	}
 
 	public static String toString(ArrayList<Image> images) {
-		StringBuffer str = new StringBuffer("Images: \n");
+		StringBuffer str = new StringBuffer();
 		for (int i = 0; i < images.size(); i++) {
 			str.append("[" + i + "]");
 			str.append(" ");
@@ -271,7 +264,13 @@ public class PhotoRenamer implements Closeable {
 					System.out.println(pr);
 					System.out.print("Select image: ");
 					int idx = input.nextInt();
-					Image chosen = pr.images.get(idx);
+					Image chosen;
+					try{
+						chosen = pr.images.get(idx);
+					} catch (IndexOutOfBoundsException e){
+						System.out.println("Image selection canceled");
+						break;
+					}
 					System.out.println("--------Options-------");
 					System.out.println("1. Add Tag");
 					System.out.println("2. Remove Tag");
@@ -345,10 +344,7 @@ public class PhotoRenamer implements Closeable {
 				break;
 			case 3: // Get images by tags
 				System.out.println("Current Tags:");
-				HashSet<String> currentTags = Tags.getTags();
-				for (String string : currentTags) {
-					System.out.println("\t" + string);
-				}
+				System.out.println(Tags.getTags());
 
 				ArrayList<String> tags = new ArrayList<String>();
 				do {
