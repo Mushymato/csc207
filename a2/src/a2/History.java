@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 /**
@@ -20,8 +21,6 @@ public class History implements Closeable {
 	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>();
 	/** The files in which changes are recorded. */
 	protected File logFile;
-	/** A BufferedWriter kept open as long as this instance is open. */
-	private BufferedWriter bw;
 	/** Name of the Image this History instance is associated with. */
 	private String imgName;
 
@@ -40,50 +39,40 @@ public class History implements Closeable {
 		this.imgName = img.imageName(); // store name
 		String logPath = PhotoRenamer.dataDirPath + this.imgName + ".log";
 		logFile = new File(logPath);
-		// check if file exists at logPath
-		FileWriter fw;
-		if (!logFile.exists()) {
-			// No file, make new file and add current image name as first change
+
+		if (!logFile.exists()){
 			try {
 				logFile.createNewFile();
-				fw = new FileWriter(logFile, true);
-				bw = new BufferedWriter(fw);
-				this.newChange(img.getName());
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else {
-			// File exists, make writer and reader
-			try {
-				fw = new FileWriter(logFile, true);
-				bw = new BufferedWriter(fw);
-			} catch (IOException e) {
-				e.printStackTrace();
+		}
+		
+		String line;
+		String vbar = "|";
+		BufferedReader br = null;
+		try {
+			// Attempt to read from file
+			br = new BufferedReader(new FileReader(logFile));
+			while ((line = br.readLine()) != null) {
+				int div = line.indexOf(vbar);
+				Timestamp time = Timestamp.valueOf(line.substring(0, div));
+				String name = line.substring(div + 1);
+				log.put(time, name);
 			}
-			String line;
-			String vbar = "|";
-			BufferedReader br = null;
-			try {
-				// Attempt to read from file
-				br = new BufferedReader(new FileReader(logFile));
-				while ((line = br.readLine()) != null) {
-					int div = line.indexOf(vbar);
-					Timestamp time = Timestamp.valueOf(line.substring(0, div));
-					String name = line.substring(div + 1);
-					log.put(time, name);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				// Make sure to close the reader
-				if (br != null) {
-					try {
-						br.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			// Make sure to close the reader
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
+
 		}
 	}
 
@@ -115,30 +104,24 @@ public class History implements Closeable {
 			currTime.setTime(currTime.getTime() + 1);
 		}
 		log.put(currTime, change);
-		try {
-			bw.write(History.line(currTime, change));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
-	 * Reverts to the int nth most recent change. Does not delete
-	 * log entries, just adds a new one with the reverting change.
-	 * The bounds of n is (2, log.size). 
-	 * If n is out of bounds, revert to the very first change
+	 * Reverts to the int nth most recent change. Does not delete log entries,
+	 * just adds a new one with the reverting change. The bounds of n is (2,
+	 * log.size). If n is out of bounds, revert to the very first change
 	 * 
 	 * @param n
-	 * 		Number of changes ago.
+	 *            Number of changes ago.
 	 * @return the reverted change, or null if no change occurs at time.
 	 */
-	protected String unChange(int n){
-		if(n < 2 || n > log.size()){
+	protected String unChange(int n) {
+		if (n < 2 || n > log.size()) {
 			n = log.size();
 		}
 		for (Timestamp change : log.descendingKeySet()) {
 			n -= 1;
-			if(n == 0){
+			if (n == 0) {
 				return this.unChange(change);
 			}
 		}
@@ -162,17 +145,36 @@ public class History implements Closeable {
 		return revert;
 	}
 	
-	@Override
-	public void close() {
-		log = null;
-		logFile = null;
-		imgName = null;
-		if (bw != null) {
+	private void writeLog(){
+		BufferedWriter bw = null;
+		try {
+			FileWriter fw = new FileWriter(this.logFile);
+			bw = new BufferedWriter(fw);
+			for (Entry<Timestamp, String> entry : this.log.entrySet()) {
+				try {
+					bw.write(History.line(entry.getKey(), entry.getValue()));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally{
 			try {
 				bw.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		
+	}
+
+	@Override
+	public void close() {
+		this.writeLog();
+		log = null;
+		logFile = null;
+		imgName = null;
 	}
 }
