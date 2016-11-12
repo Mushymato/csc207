@@ -22,6 +22,14 @@ public class PhotoRenamer implements Closeable {
 		String line = "";
 		// Reader to load file
 		BufferedReader br = null;
+		File dataDir = new File(PhotoRenamer.dataDirPath);
+		if (!dataDir.exists()) {
+			dataDir.mkdirs();
+		}
+		if (!dataDir.isDirectory()) {
+			dataDir.delete();
+			dataDir.mkdirs();
+		}
 		try {
 			// Attempt to read from file
 			this.imagesPath = new File(imagesPath);
@@ -173,11 +181,23 @@ public class PhotoRenamer implements Closeable {
 
 	public boolean moveData(String newDirPath) {
 		File newDir = new File(newDirPath);
-		if (newDir.exists()) {
-			newDir = new File(newDir.getAbsolutePath() + "//data");
+		String absPath = newDir.getAbsolutePath();
+		if (newDir.isFile() && absPath.contains(".")) {
+			newDir = new File(absPath.substring(0, absPath.indexOf(".")));
+			absPath = newDir.getAbsolutePath();
 		}
+		int i = 1;
+		while (newDir.exists()) {
+			newDir = new File(absPath + "(" + i + ")");
+		}
+		newDir.mkdir();
 		File oldDir = new File(PhotoRenamer.dataDirPath);
-		return oldDir.renameTo(newDir);
+		if(oldDir.renameTo(newDir)){
+			PhotoRenamer.dataDirPath = newDir.getAbsolutePath();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public void clearData() {
@@ -186,7 +206,7 @@ public class PhotoRenamer implements Closeable {
 			this.clearDir(dataDir);
 		}
 		for (int i = 0; i < images.size(); i++) {
-			images.get(i).revertName(0);
+			images.get(i).revertToOriginal();
 		}
 	}
 
@@ -218,6 +238,7 @@ public class PhotoRenamer implements Closeable {
 		Scanner input = new Scanner(System.in);
 		int key;
 		String yn = "n";
+		boolean success = false;
 		do {
 			System.out.println("-----PhotoRenamer-----");
 			System.out.println("1. Add new image");
@@ -242,7 +263,6 @@ public class PhotoRenamer implements Closeable {
 			case 2: // Manage images
 				do {
 					yn = "n";
-					boolean success = false;
 					System.out.println(pr);
 					System.out.print("Select image: ");
 					int idx = input.nextInt();
@@ -255,7 +275,7 @@ public class PhotoRenamer implements Closeable {
 					System.out.println("5. Remove image");
 					System.out.println("Enter your selection:");
 					idx = input.nextInt();
-					switch (key) {
+					switch (idx) {
 					case 1: // Add tag
 						do {
 							yn = "n";
@@ -294,7 +314,7 @@ public class PhotoRenamer implements Closeable {
 						if (key == 3) {
 							success = chosen.revertName(2);
 						} else if (key == 4) {
-							System.out.println("How many steps to undo?");
+							System.out.print("Enter number of steps to undo: ");
 							int steps = input.nextInt();
 							success = chosen.revertName(steps);
 						}
@@ -345,6 +365,44 @@ public class PhotoRenamer implements Closeable {
 				System.out.println("1. Change where data is stored");
 				System.out.println("2. Delete all tags and restore file names");
 				System.out.println("3. Delete all data");
+				System.out.print("Enter your selection:");
+				int choice = input.nextInt();
+				switch (choice) {
+				case 1:
+					do {
+						yn = "n";
+						success = false;
+						System.out.print("Enter new directory for data: ");
+						String newDirPath = input.nextLine();
+						if (pr.moveData(newDirPath)){
+							System.out.println("Data is now stored at "+PhotoRenamer.dataDirPath);
+							success = true;
+						} else {
+							System.out.println("Data move unsuccessful, try again? y/n");
+							yn = input.nextLine();
+						}
+					} while (!success && yn.matches("y"));
+					break;
+				case 2:
+					System.out.println("Are you sure you want to remove tags from all images? y/n");
+					yn = input.nextLine();
+					if(yn.matches("y")){
+						for (Image img : pr.listImage()) {
+							img.revertToOriginal();
+						}
+						System.out.println("Tags cleared.");
+					}
+					break;
+				case 3:
+					System.out.println("Are you sure you want to clear all data? y/n");
+					yn = input.nextLine();
+					if(yn.matches("y")){
+						pr.clearData();
+					}
+					break;
+				default:
+					break;
+				}
 				break;
 			case 0: // Exit program
 			default:

@@ -44,13 +44,14 @@ public class Image implements Closeable {
 	private void updateTags() {
 		String dot = ".";
 		String tagsInName = imgFile.getName();
+		
 		try {
 			tagsInName = tagsInName.substring(tagsInName.indexOf(Tags.PREFIX) + 1, tagsInName.indexOf(dot));
-			tags = new HashSet<String>(Arrays.asList(tagsInName.split(Tags.PREFIX)));
-			// TODO: no need for set here
-			for (String tag : tags) {
-				this.addTag(tag.trim());
+			String[] tagsArray = tagsInName.split(Tags.PREFIX);
+			for (int i = 0; i < tagsArray.length; i++) {
+				tagsArray[i] = tagsArray[i].trim();
 			}
+			tags = new HashSet<String>(Arrays.asList(tagsArray));
 		} catch (StringIndexOutOfBoundsException e) {
 			tags = new HashSet<String>();
 		} catch (Exception e) {
@@ -88,10 +89,10 @@ public class Image implements Closeable {
 		String name = imgFile.getName();
 		try {
 			return name.substring(0, name.indexOf(Tags.PREFIX));
-		} catch (StringIndexOutOfBoundsException e) {
+		} catch (IndexOutOfBoundsException e) {
 			try {
 				return name.substring(0, name.indexOf("."));
-			} catch (StringIndexOutOfBoundsException eh) {
+			} catch (IndexOutOfBoundsException eh) {
 				return name;
 			}
 		}
@@ -154,6 +155,26 @@ public class Image implements Closeable {
 			} else {
 				return false;
 			}
+		} else {
+			return false;
+		}
+	}
+	/**
+	 * Makes a best guess at the original name of the image and revert name to it.
+	 * @return
+	 */
+	public boolean revertToOriginal(){
+		String name = this.imageName();
+		if(this.getName().contains(".")){
+			name += "." + this.getName().substring(this.getName().indexOf("."));
+		}
+		File newFile = new File(name);
+		imgFile.renameTo(newFile);
+		if (imgFile.renameTo(newFile)) {
+			log.newChange(name);
+			imgFile = newFile;
+			this.updateTags();
+			return true;
 		} else {
 			return false;
 		}
