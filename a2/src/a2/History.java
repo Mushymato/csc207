@@ -19,7 +19,7 @@ public class History implements Closeable {
 	/** A Map that maps a Timestamp to a name change (String). */
 	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>();
 	/** The files in which changes are recorded. */
-	private File logFile;
+	protected File logFile;
 	/** A BufferedWriter kept open as long as this instance is open. */
 	private BufferedWriter bw;
 	/** Name of the Image this History instance is associated with. */

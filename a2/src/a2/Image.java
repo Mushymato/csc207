@@ -159,9 +159,9 @@ public class Image implements Closeable {
 		}
 	}
 	
-//	public boolean moveLog(){
-//		return log.move();
-//	}
+	public void deleteLog(){
+		this.log.logFile.delete();
+	}
 
 	@Override
 	public void close() {
