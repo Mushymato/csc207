@@ -24,7 +24,8 @@ public class Image implements Closeable {
 	 */
 	public Image(String path) throws FileNotFoundException {
 		imgFile = new File(path);
-		// Only initialize Image if file exist, file is a File, and file name contains a '.'
+		// Only initialize Image if file exist, file is a File, and file name
+		// contains a '.'
 		if (imgFile.exists()) {
 			if (imgFile.isFile() && imgFile.getName().contains(".")) {
 				this.log = new History(this);
@@ -44,35 +45,38 @@ public class Image implements Closeable {
 	private void updateTags() {
 		String dot = ".";
 		String tagsInName = imgFile.getName();
-		
-		try {
-			tagsInName = tagsInName.substring(tagsInName.indexOf(Tags.PREFIX) + 1, tagsInName.indexOf(dot));
-			String[] tagsArray = tagsInName.split(Tags.PREFIX);
-			for (int i = 0; i < tagsArray.length; i++) {
-				tagsArray[i] = tagsArray[i].trim();
-			}
-			tags = new HashSet<String>(Arrays.asList(tagsArray));
-		} catch (StringIndexOutOfBoundsException e) {
+		if (!tagsInName.contains(Tags.PREFIX)) {
 			tags = new HashSet<String>();
-		} catch (Exception e) {
-			e.printStackTrace();
+		} else {
+			try {
+				tagsInName = tagsInName.substring(tagsInName.indexOf(Tags.PREFIX) + 1, tagsInName.indexOf(dot));
+				String[] tagsArray = tagsInName.split(Tags.PREFIX);
+				for (int i = 0; i < tagsArray.length; i++) {
+					tagsArray[i] = tagsArray[i].trim();
+				}
+				tags = new HashSet<String>(Arrays.asList(tagsArray));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
+
 	/**
 	 * Get the name of the image.
-	 * @return
-	 * 		Name of the image file
+	 * 
+	 * @return Name of the image file
 	 */
-	public String getName(){
+	public String getName() {
 		return imgFile.getName();
 	}
-	
+
 	/**
-	 * Get canonical path, and return it if it exists. Otherwise return the absolute path.
-	 * @return
-	 * 		Path the to imgFile.
+	 * Get canonical path, and return it if it exists. Otherwise return the
+	 * absolute path.
+	 * 
+	 * @return Path the to imgFile.
 	 */
-	public String getPath(){
+	public String getPath() {
 		try {
 			return imgFile.getCanonicalPath();
 		} catch (IOException e) {
@@ -99,14 +103,14 @@ public class Image implements Closeable {
 	}
 
 	/**
-	 * Insert a tag into the imgName. Add the tag to 
+	 * Insert a tag into the imgName. Add the tag to
+	 * 
 	 * @param tag
-	 * 		The tag to be added to imgName
-	 * @return
-	 * 		Whether a tag was successfully added to imgName.
+	 *            The tag to be added to imgName
+	 * @return Whether a tag was successfully added to imgName.
 	 */
 	public boolean addTag(String tag) {
-		if (tags.add(tag)) {	
+		if (tags.add(tag)) {
 			String dot = "\\.";
 			String path = this.getPath();
 			String[] nameAndExtension = path.split(dot);
@@ -159,13 +163,16 @@ public class Image implements Closeable {
 			return false;
 		}
 	}
+
 	/**
-	 * Makes a best guess at the original name of the image and revert name to it.
+	 * Makes a best guess at the original name of the image and revert name to
+	 * it.
+	 * 
 	 * @return
 	 */
-	public boolean revertToOriginal(){
+	public boolean revertToOriginal() {
 		String name = this.imageName();
-		if(this.getName().contains(".")){
+		if (this.getName().contains(".")) {
 			name += "." + this.getName().substring(this.getName().indexOf("."));
 		}
 		File newFile = new File(name);
@@ -179,8 +186,8 @@ public class Image implements Closeable {
 			return false;
 		}
 	}
-	
-	public void deleteLog(){
+
+	public void deleteLog() {
 		this.log.logFile.delete();
 	}
 

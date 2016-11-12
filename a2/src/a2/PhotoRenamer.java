@@ -254,14 +254,19 @@ public class PhotoRenamer implements Closeable {
 				do {
 					yn = "n";
 					System.out.print("Enter image file path: ");
-					String res = pr.addImage(input.nextLine());
+					String path = input.next();
+					String res = pr.addImage(path);
 					System.out.println(res);
 					System.out.println("Add another image? y/n");
-					yn = input.nextLine();
+					yn = input.next();
 				} while (yn.matches("y"));
 				break;
 			case 2: // Manage images
 				do {
+					if(pr.images.size() == 0){
+						System.out.println("You haven't added any images yet.");
+						break;
+					}
 					yn = "n";
 					System.out.println(pr);
 					System.out.print("Select image: ");
@@ -282,14 +287,14 @@ public class PhotoRenamer implements Closeable {
 							System.out.println("Current tags:");
 							System.out.println(chosen.tags);
 							System.out.print("Enter a tag: ");
-							String tag = input.nextLine();
+							String tag = input.next();
 							if (chosen.addTag(tag)) {
 								System.out.println("Tag added.");
 							} else {
 								System.out.println("Add tag unsuccessful.");
 							}
 							System.out.println("Keep adding tags to this image? y/n");
-							yn = input.nextLine();
+							yn = input.next();
 						} while (yn.matches("y"));
 						break;
 					case 2: // Del tag
@@ -298,14 +303,14 @@ public class PhotoRenamer implements Closeable {
 							System.out.println("Current tags:");
 							System.out.println(chosen.tags);
 							System.out.print("Enter a tag: ");
-							String tag = input.nextLine();
+							String tag = input.next();
 							if (chosen.delTag(tag)) {
 								System.out.println("Tag deleted.");
 							} else {
 								System.out.println("No such tag.");
 							}
 							System.out.println("Keep deleting tags from this image? y/n");
-							yn = input.nextLine();
+							yn = input.next();
 						} while (yn.matches("y"));
 						break;
 					case 3: // revert 2
@@ -326,7 +331,7 @@ public class PhotoRenamer implements Closeable {
 						break;
 					case 5: // remove image
 						System.out.println("Delete data and revert the image name? y/n");
-						yn = input.nextLine();
+						yn = input.next();
 						String res = pr.delImage(chosen, yn == "y");
 						System.out.println(res);
 						break;
@@ -334,7 +339,7 @@ public class PhotoRenamer implements Closeable {
 						break;
 					}
 					System.out.println("Choose another image? y/n");
-					yn = input.nextLine();
+					yn = input.next();
 				} while (yn.matches("y"));
 
 				break;
@@ -349,9 +354,9 @@ public class PhotoRenamer implements Closeable {
 				do {
 					yn = "n";
 					System.out.print("Enter a tag: ");
-					tags.add(input.nextLine());
+					tags.add(input.next());
 					System.out.println("Keep choosing tags? y/n");
-					yn = input.nextLine();
+					yn = input.next();
 				} while (yn.matches("y"));
 				System.out.println("Images tagged as: " + tags.toString());
 				System.out.println(PhotoRenamer.toString(pr.listImageByTags(tags)));
@@ -373,19 +378,19 @@ public class PhotoRenamer implements Closeable {
 						yn = "n";
 						success = false;
 						System.out.print("Enter new directory for data: ");
-						String newDirPath = input.nextLine();
+						String newDirPath = input.next();
 						if (pr.moveData(newDirPath)){
 							System.out.println("Data is now stored at "+PhotoRenamer.dataDirPath);
 							success = true;
 						} else {
 							System.out.println("Data move unsuccessful, try again? y/n");
-							yn = input.nextLine();
+							yn = input.next();
 						}
 					} while (!success && yn.matches("y"));
 					break;
 				case 2:
 					System.out.println("Are you sure you want to remove tags from all images? y/n");
-					yn = input.nextLine();
+					yn = input.next();
 					if(yn.matches("y")){
 						for (Image img : pr.listImage()) {
 							img.revertToOriginal();
@@ -395,7 +400,7 @@ public class PhotoRenamer implements Closeable {
 					break;
 				case 3:
 					System.out.println("Are you sure you want to clear all data? y/n");
-					yn = input.nextLine();
+					yn = input.next();
 					if(yn.matches("y")){
 						pr.clearData();
 					}
