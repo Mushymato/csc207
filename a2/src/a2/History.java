@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,6 +42,11 @@ public class History implements Closeable {
 		File logFile = new File(logFilePath);
 		// Make new file if no file exists
 		if (!logFile.exists()) {
+			try {
+				logFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			this.newChange(img.getName());
 			this.writeLog();
 		} else {
@@ -102,8 +108,8 @@ public class History implements Closeable {
 	}
 
 	/**
-	 * Reverts to the nth most recent change. Does not delete log entries,
-	 * just adds a new one with the reverting change. The bounds of n is (2,
+	 * Reverts to the nth most recent change. Does not delete log entries, just
+	 * adds a new one with the reverting change. The bounds of n is (2,
 	 * log.size). If n is out of bounds, revert to the very first change
 	 * 
 	 * @param n
@@ -144,14 +150,6 @@ public class History implements Closeable {
 	 * Record all History log entries to the .log file stored at logFilePath
 	 */
 	private void writeLog() {
-		File logFile = new File(this.logFilePath);
-		if (!logFile.exists()) {
-			try {
-				logFile.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 		BufferedWriter bw = null;
 		try {
 			FileWriter fw = new FileWriter(this.logFilePath);
@@ -163,6 +161,8 @@ public class History implements Closeable {
 					e.printStackTrace();
 				}
 			}
+		} catch (FileNotFoundException e) {
+			// do nothing
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
 public class PhotoRenamer implements Closeable {
@@ -218,7 +219,8 @@ public class PhotoRenamer implements Closeable {
 			System.out.println("1. Add new image");
 			System.out.println("2. Manage images");
 			System.out.println("3. View images by tag");
-			System.out.println("4. Settings");
+			System.out.println("4. View tags");
+			System.out.println("5. Settings");
 			System.out.println("0. Exit program");
 			System.out.print("Enter your selection: ");
 			tmp = input.next();
@@ -236,7 +238,7 @@ public class PhotoRenamer implements Closeable {
 					String res = pr.addImage(path);
 					System.out.println(res);
 					pr.writeImagePaths();
-					System.out.println("Add another image? y/n");
+					System.out.print("Add another image? y/n ");
 					yn = input.next();
 				} while (yn.matches("y"));
 				break;
@@ -247,6 +249,7 @@ public class PhotoRenamer implements Closeable {
 						break;
 					}
 					yn = "n";
+					System.out.println("Images: ");
 					System.out.println(pr);
 					System.out.print("Select image: ");
 					tmp = input.next();
@@ -259,7 +262,7 @@ public class PhotoRenamer implements Closeable {
 					try {
 						chosen = pr.images.get(key);
 					} catch (IndexOutOfBoundsException e) {
-						System.out.println("Image selection canceled");
+						System.out.println("Image selection canceled.");
 						break;
 					}
 					System.out.println("--------Options-------");
@@ -268,7 +271,7 @@ public class PhotoRenamer implements Closeable {
 					System.out.println("3. Revert to last change");
 					System.out.println("4. Revert to specified change");
 					System.out.println("5. Remove image");
-					System.out.println("Enter your selection:");
+					System.out.print("Enter your selection: ");
 					tmp = input.next();
 					try {
 						key = Integer.parseInt(tmp);
@@ -286,14 +289,18 @@ public class PhotoRenamer implements Closeable {
 							if (chosen.addTag(tag)) {
 								System.out.println("Tag added.");
 							} else {
-								System.out.println("Add tag unsuccessful.");
+								System.out.println("Tag addition unsuccessful.");
 							}
-							System.out.println("Keep adding tags to this image? y/n");
+							System.out.print("Keep adding tags to this image? y/n ");
 							yn = input.next();
 						} while (yn.matches("y"));
 						break;
 					case 2: // Del tag
 						do {
+							if (chosen.tags.size() == 0) {
+								System.out.println(chosen.getName() + " has no tags.");
+								break;
+							}
 							yn = "n";
 							System.out.println("Current tags:");
 							System.out.println(chosen.tags);
@@ -304,7 +311,7 @@ public class PhotoRenamer implements Closeable {
 							} else {
 								System.out.println("No such tag.");
 							}
-							System.out.println("Keep deleting tags from this image? y/n");
+							System.out.print("Keep deleting tags from this image? y/n ");
 							yn = input.next();
 						} while (yn.matches("y"));
 						break;
@@ -330,7 +337,7 @@ public class PhotoRenamer implements Closeable {
 						}
 						break;
 					case 5: // remove image
-						System.out.println("Delete data and revert the image name? y/n");
+						System.out.print("Delete data and revert the image name? y/n ");
 						yn = input.next();
 						String res = pr.delImage(chosen, yn == "y");
 						System.out.println(res);
@@ -338,7 +345,7 @@ public class PhotoRenamer implements Closeable {
 					default:
 						break;
 					}
-					System.out.println("Choose another image? y/n");
+					System.out.print("Choose another image? y/n ");
 					yn = input.next();
 				} while (yn.matches("y"));
 
@@ -347,26 +354,38 @@ public class PhotoRenamer implements Closeable {
 				System.out.println("Current Tags:");
 				System.out.println(Tags.getTags());
 
-				ArrayList<String> tags = new ArrayList<String>();
+				ArrayList<String> tagChoices = new ArrayList<String>();
 				do {
 					yn = "n";
 					System.out.print("Enter a tag: ");
-					tags.add(input.next());
+					tagChoices.add(input.next());
 					System.out.println("Keep choosing tags? y/n");
 					yn = input.next();
 				} while (yn.matches("y"));
-				System.out.println("Images tagged as: " + tags.toString());
-				System.out.println(PhotoRenamer.toString(pr.listImageByTags(tags)));
+				System.out.println("Images tagged as: " + tagChoices.toString());
+				System.out.println(PhotoRenamer.toString(pr.listImageByTags(tagChoices)));
 				break;
-			case 4: // Settings
+			case 4:
+				Map<String, Integer> tagsByUsage = Tags.getTagUsage();
+				if(!tagsByUsage.isEmpty()){
+					int i = 1;
+					for (Map.Entry<String, Integer> tag : tagsByUsage.entrySet()) {
+						System.out.printf("%d %s, used %d times.", i, tag.getKey(), tag.getValue());
+					}
+				} else {
+					System.out.println("There are no tags yet.");
+				}
+				break;
+			case 5: // Settings
 				System.out.println("-------Settings-------");
 				System.out.println("1. Delete all tags and restore file names");
 				System.out.println("2. Delete all data");
+				System.out.println("0. Cancel");
 				System.out.print("Enter your selection:");
 				int choice = input.nextInt();
 				switch (choice) {
 				case 1:
-					System.out.println("Are you sure you want to remove tags from all images? y/n");
+					System.out.print("Are you sure you want to remove tags from all images? y/n");
 					yn = input.next();
 					if (yn.matches("y")) {
 						for (Image img : pr.listImage()) {
@@ -376,18 +395,18 @@ public class PhotoRenamer implements Closeable {
 					}
 					break;
 				case 2:
-					System.out.println("Are you sure you want to clear all data? y/n");
+					System.out.print("Are you sure you want to clear all data? y/n");
 					yn = input.next();
 					if (yn.matches("y")) {
 						pr.clearData();
 					}
 					break;
+				case 0:
 				default:
 					break;
 				}
 				break;
 			case 0: // Exit program
-				break;
 			default:
 				break;
 			}
