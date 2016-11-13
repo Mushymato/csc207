@@ -187,14 +187,18 @@ public class Image implements Closeable {
 		}
 	}
 
-	public void deleteLog() {
-		this.log.logFile.delete();
-	}
-
 	@Override
 	public void close() {
 		imgFile = null;
 		tags = null;
 		log.close();
+	}
+
+	public boolean deleteLog() {
+		return this.log.delLog();
+	}
+	
+	public boolean moveLog(){
+		return this.log.moveLog();
 	}
 }

@@ -20,7 +20,7 @@ public class History implements Closeable {
 	/** A Map that maps a Timestamp to a name change (String). */
 	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>();
 	/** The files in which changes are recorded. */
-	protected File logFile;
+	private File logFile;
 	/** Name of the Image this History instance is associated with. */
 	private String imgName;
 
@@ -40,7 +40,7 @@ public class History implements Closeable {
 		String logPath = PhotoRenamer.dataDirPath + this.imgName + ".log";
 		logFile = new File(logPath);
 
-		if (!logFile.exists()){
+		if (!logFile.exists()) {
 			try {
 				logFile.createNewFile();
 			} catch (IOException e) {
@@ -48,7 +48,7 @@ public class History implements Closeable {
 				e.printStackTrace();
 			}
 		}
-		
+
 		String line;
 		String vbar = "|";
 		BufferedReader br = null;
@@ -144,8 +144,11 @@ public class History implements Closeable {
 		this.newChange(revert);
 		return revert;
 	}
-	
-	private void writeLog(){
+
+	/**
+	 * Record all History log entries to a file stored at logFile
+	 */
+	private void writeLog() {
 		BufferedWriter bw = null;
 		try {
 			FileWriter fw = new FileWriter(this.logFile);
@@ -160,14 +163,40 @@ public class History implements Closeable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally{
+		} finally {
 			try {
 				bw.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
+	}
+
+	/**
+	 * Move the log file to the directory specified by PhotoRenamer.dataDirPath.
+	 * Does nothing if the new directory is the same as the old.
+	 * 
+	 * @return true iff move successful.
+	 */
+	public boolean moveLog() {
+		String logPath = PhotoRenamer.dataDirPath + this.imgName + ".log";
+		File newLogFile = new File(logPath);
+		if (logFile.renameTo(newLogFile)) {
+			logFile = newLogFile;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean delLog() {
+		if (logFile.delete()) {
+			log = new TreeMap<Timestamp, String>();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

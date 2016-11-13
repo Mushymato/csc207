@@ -182,13 +182,12 @@ public class PhotoRenamer implements Closeable {
 		while (newDir.exists()) {
 			newDir = new File(absPath + "(" + i + ")");
 		}
-		File oldDir = new File(PhotoRenamer.dataDirPath);
-		if (oldDir.renameTo(newDir)) {
-			PhotoRenamer.dataDirPath = newDir.getAbsolutePath();
-			return true;
-		} else {
-			return false;
+		PhotoRenamer.dataDirPath = newDir.getAbsolutePath();
+		boolean success = true;
+		for (int j = 0; j < images.size(); j++) {
+			success = images.get(i).moveLog() && success;
 		}
+		return success;
 	}
 
 	public void clearData() {
