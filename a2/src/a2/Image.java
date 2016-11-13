@@ -165,15 +165,16 @@ public class Image implements Closeable {
 	}
 
 	/**
-	 * Makes a best guess at the original name of the image and revert name to
-	 * it.
+	 * Remove all tags from the image name, does nothing if there are no tags.
 	 * 
-	 * @return
+	 * @return true if revert successful.
 	 */
 	public boolean revertToOriginal() {
-		String name = this.imageName();
-		if (this.getName().contains(".")) {
-			name += "." + this.getName().substring(this.getName().indexOf("."));
+		String name = this.getPath();
+		if(name.contains(Tags.PREFIX) && name.contains(".")){
+			name = name.substring(0, name.indexOf(Tags.PREFIX)) + name.substring(name.indexOf("."));
+		} else { // no tags
+			return true;
 		}
 		File newFile = new File(name);
 		imgFile.renameTo(newFile);
@@ -196,9 +197,5 @@ public class Image implements Closeable {
 
 	public boolean deleteLog() {
 		return this.log.delLog();
-	}
-	
-	public boolean moveLog(){
-		return this.log.moveLog();
 	}
 }

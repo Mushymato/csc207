@@ -171,32 +171,15 @@ public class PhotoRenamer implements Closeable {
 		return str.toString();
 	}
 
-	public boolean moveData(String newDirPath) {
-		File newDir = new File(newDirPath);
-		String absPath = newDir.getAbsolutePath();
-		if (newDir.isFile() && absPath.contains(".")) {
-			newDir = new File(absPath.substring(0, absPath.indexOf(".")));
-			absPath = newDir.getAbsolutePath();
-		}
-		int i = 1;
-		while (newDir.exists()) {
-			newDir = new File(absPath + "(" + i + ")");
-		}
-		PhotoRenamer.dataDirPath = newDir.getAbsolutePath();
-		boolean success = true;
-		for (int j = 0; j < images.size(); j++) {
-			success = images.get(i).moveLog() && success;
-		}
-		return success;
-	}
-
 	public void clearData() {
 		File dataDir = new File(PhotoRenamer.dataDirPath);
+		for (int i = 0; i < images.size(); i++) {
+			images.get(i).deleteLog();
+			images.get(i).revertToOriginal();
+		}
 		if (dataDir.exists()) {
 			this.clearDir(dataDir);
-		}
-		for (int i = 0; i < images.size(); i++) {
-			images.get(i).revertToOriginal();
+			dataDir.delete();
 		}
 	}
 
@@ -204,7 +187,7 @@ public class PhotoRenamer implements Closeable {
 		if (del.isDirectory()) {
 			File[] sub = del.listFiles();
 			for (int i = 0; i < sub.length; i++) {
-				this.clearDir(del);
+				this.clearDir(sub[i]);
 			}
 		} else {
 			del.delete();
@@ -360,28 +343,12 @@ public class PhotoRenamer implements Closeable {
 				 * data(remove all tags)
 				 */
 				System.out.println("-------Settings-------");
-				System.out.println("1. Change where data is stored");
-				System.out.println("2. Delete all tags and restore file names");
-				System.out.println("3. Delete all data");
+				System.out.println("1. Delete all tags and restore file names");
+				System.out.println("2. Delete all data");
 				System.out.print("Enter your selection:");
 				int choice = input.nextInt();
 				switch (choice) {
 				case 1:
-					do {
-						yn = "n";
-						success = false;
-						System.out.print("Enter new directory for data: ");
-						String newDirPath = input.next();
-						if (pr.moveData(newDirPath)) {
-							System.out.println("Data is now stored at " + PhotoRenamer.dataDirPath);
-							success = true;
-						} else {
-							System.out.println("Data move unsuccessful, try again? y/n");
-							yn = input.next();
-						}
-					} while (!success && yn.matches("y"));
-					break;
-				case 2:
 					System.out.println("Are you sure you want to remove tags from all images? y/n");
 					yn = input.next();
 					if (yn.matches("y")) {
@@ -391,7 +358,7 @@ public class PhotoRenamer implements Closeable {
 						System.out.println("Tags cleared.");
 					}
 					break;
-				case 3:
+				case 2:
 					System.out.println("Are you sure you want to clear all data? y/n");
 					yn = input.next();
 					if (yn.matches("y")) {

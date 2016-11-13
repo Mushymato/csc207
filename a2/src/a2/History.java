@@ -20,7 +20,7 @@ public class History implements Closeable {
 	/** A Map that maps a Timestamp to a name change (String). */
 	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>();
 	/** The files in which changes are recorded. */
-	private File logFile;
+	private String logFilePath;
 	/** Name of the Image this History instance is associated with. */
 	private String imgName;
 
@@ -37,8 +37,8 @@ public class History implements Closeable {
 	 */
 	History(Image img) {
 		this.imgName = img.imageName(); // store name
-		String logPath = PhotoRenamer.dataDirPath + this.imgName + ".log";
-		logFile = new File(logPath);
+		this.logFilePath = PhotoRenamer.dataDirPath + this.imgName + ".log";
+		File logFile = new File(logFilePath);
 
 		if (!logFile.exists()) {
 			try {
@@ -151,7 +151,7 @@ public class History implements Closeable {
 	private void writeLog() {
 		BufferedWriter bw = null;
 		try {
-			FileWriter fw = new FileWriter(this.logFile);
+			FileWriter fw = new FileWriter(this.logFilePath);
 			bw = new BufferedWriter(fw);
 			for (Entry<Timestamp, String> entry : this.log.entrySet()) {
 				try {
@@ -173,24 +173,8 @@ public class History implements Closeable {
 
 	}
 
-	/**
-	 * Move the log file to the directory specified by PhotoRenamer.dataDirPath.
-	 * Does nothing if the new directory is the same as the old.
-	 * 
-	 * @return true iff move successful.
-	 */
-	public boolean moveLog() {
-		String logPath = PhotoRenamer.dataDirPath + this.imgName + ".log";
-		File newLogFile = new File(logPath);
-		if (logFile.renameTo(newLogFile)) {
-			logFile = newLogFile;
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public boolean delLog() {
+		File logFile = new File(logFilePath);
 		if (logFile.delete()) {
 			log = new TreeMap<Timestamp, String>();
 			return true;
@@ -203,7 +187,7 @@ public class History implements Closeable {
 	public void close() {
 		this.writeLog();
 		log = null;
-		logFile = null;
+		logFilePath = null;
 		imgName = null;
 	}
 }
