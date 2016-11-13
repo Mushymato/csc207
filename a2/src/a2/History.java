@@ -35,44 +35,39 @@ public class History implements Closeable {
 	 *            The Image object to be associated with this instance of
 	 *            History.
 	 */
-	History(Image img) {
+	protected History(Image img) {
 		this.imgName = img.imageName(); // store name
 		this.logFilePath = PhotoRenamer.dataDirPath + this.imgName + ".log";
 		File logFile = new File(logFilePath);
-
+		// Make new file if no file exists
 		if (!logFile.exists()) {
+			this.newChange(img.getName());
+			this.writeLog();
+		} else {
+			String line;
+			String vbar = "|";
+			BufferedReader br = null;
 			try {
-				logFile.createNewFile();
+				// Attempt to read from file
+				br = new BufferedReader(new FileReader(logFile));
+				while ((line = br.readLine()) != null) {
+					int div = line.indexOf(vbar);
+					Timestamp time = Timestamp.valueOf(line.substring(0, div));
+					String name = line.substring(div + 1);
+					log.put(time, name);
+				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-		}
-
-		String line;
-		String vbar = "|";
-		BufferedReader br = null;
-		try {
-			// Attempt to read from file
-			br = new BufferedReader(new FileReader(logFile));
-			while ((line = br.readLine()) != null) {
-				int div = line.indexOf(vbar);
-				Timestamp time = Timestamp.valueOf(line.substring(0, div));
-				String name = line.substring(div + 1);
-				log.put(time, name);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			// Make sure to close the reader
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+			} finally {
+				// Make sure to close the reader
+				if (br != null) {
+					try {
+						br.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
-
 		}
 	}
 
@@ -107,7 +102,7 @@ public class History implements Closeable {
 	}
 
 	/**
-	 * Reverts to the int nth most recent change. Does not delete log entries,
+	 * Reverts to the nth most recent change. Does not delete log entries,
 	 * just adds a new one with the reverting change. The bounds of n is (2,
 	 * log.size). If n is out of bounds, revert to the very first change
 	 * 
@@ -146,9 +141,17 @@ public class History implements Closeable {
 	}
 
 	/**
-	 * Record all History log entries to a file stored at logFile
+	 * Record all History log entries to the .log file stored at logFilePath
 	 */
 	private void writeLog() {
+		File logFile = new File(this.logFilePath);
+		if (!logFile.exists()) {
+			try {
+				logFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		BufferedWriter bw = null;
 		try {
 			FileWriter fw = new FileWriter(this.logFilePath);
@@ -161,7 +164,6 @@ public class History implements Closeable {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {
@@ -173,7 +175,12 @@ public class History implements Closeable {
 
 	}
 
-	public boolean delLog() {
+	/**
+	 * Clear all history entries and delete the log file
+	 * 
+	 * @return
+	 */
+	protected boolean delete() {
 		File logFile = new File(logFilePath);
 		if (logFile.delete()) {
 			log = new TreeMap<Timestamp, String>();

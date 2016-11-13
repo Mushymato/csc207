@@ -124,7 +124,7 @@ public class PhotoRenamer implements Closeable {
 		if (images.remove(img)) {
 			if (clearData) {
 				img.revertName(0);
-				img.deleteLog();
+				img.log.delete();
 				return img.imageName() + " removed, data cleared.";
 			} else {
 				return img.imageName() + " removed.";
@@ -174,7 +174,7 @@ public class PhotoRenamer implements Closeable {
 	public void clearData() {
 		File dataDir = new File(PhotoRenamer.dataDirPath);
 		for (int i = 0; i < images.size(); i++) {
-			images.get(i).deleteLog();
+			images.get(i).log.delete();
 			images.get(i).revertToOriginal();
 		}
 		if (dataDir.exists()) {

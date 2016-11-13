@@ -12,17 +12,19 @@ public class Image implements Closeable {
 	/** Location of the image file */
 	private File imgFile;
 	/** Tags associated with this image file */
-	public HashSet<String> tags;
+	protected HashSet<String> tags;
 	/** Change log associated with this image file */
-	private History log;
+	protected History log;
 
 	/**
 	 * Create new Image object using a path
 	 * 
 	 * @param path
 	 *            Path to the image file
+	 * @throws FileNotFoundException
+	 * 			If file does not exist or file does not have a extension
 	 */
-	public Image(String path) throws FileNotFoundException {
+	protected Image(String path) throws FileNotFoundException {
 		imgFile = new File(path);
 		// Only initialize Image if file exist, file is a File, and file name
 		// contains a '.'
@@ -31,7 +33,7 @@ public class Image implements Closeable {
 				this.log = new History(this);
 				this.updateTags();
 			} else {
-				new FileNotFoundException(path + " is not an file.");
+				throw new FileNotFoundException(path + " is not an image file.");
 			}
 		} else {
 			throw new FileNotFoundException(path + " does not exist.");
@@ -67,7 +69,7 @@ public class Image implements Closeable {
 	 * 
 	 * @return Name of the image file
 	 */
-	public String getName() {
+	protected String getName() {
 		return imgFile.getName();
 	}
 
@@ -77,7 +79,7 @@ public class Image implements Closeable {
 	 * 
 	 * @return Path the to imgFile.
 	 */
-	public String getPath() {
+	protected String getPath() {
 		try {
 			return imgFile.getCanonicalPath();
 		} catch (IOException e) {
@@ -90,7 +92,7 @@ public class Image implements Closeable {
 	 * 
 	 * @return
 	 */
-	public String imageName() {
+	protected String imageName() {
 		String name = imgFile.getName();
 		try {
 			return name.substring(0, name.indexOf(Tags.PREFIX));
@@ -104,13 +106,13 @@ public class Image implements Closeable {
 	}
 
 	/**
-	 * Insert a tag into the imgName. Add the tag to
+	 * Insert a tag into the name of the name of the image. Add the tag to the set of tags associated with this image.
 	 * 
 	 * @param tag
-	 *            The tag to be added to imgName
-	 * @return Whether a tag was successfully added to imgName.
+	 *            The tag to be added to this Image.
+	 * @return true if a tag was successfully added to this Image.
 	 */
-	public boolean addTag(String tag) {
+	protected boolean addTag(String tag) {
 		if (tags.add(tag)) {
 			String dot = "\\.";
 			String path = this.getPath();
@@ -128,13 +130,20 @@ public class Image implements Closeable {
 			return false;
 		}
 	}
-
-	public boolean delTag(String tag) {
+	/**
+	 * Remove a tag from the name of the image, remove it from the set of tags associated with this image.
+	 * Does nothing if this image does not have the specified tag.
+	 * @param tag
+	 * 		The tag to be removed from this Image.
+	 * @return true if a tag was successfully added to this Image, false if removal unsuccessful.
+	 */
+	protected boolean delTag(String tag) {
 		if (tags.contains(tag)) {
 			String newName = this.getPath().replaceFirst(Tags.PREFIX + tag, "");
 			tags.remove(tag);
 			File newFile = new File(newName);
 			if (imgFile.renameTo(newFile)) {
+				Tags.removeTag(tag);
 				imgFile = newFile;
 				log.newChange(newName);
 				return true;
@@ -145,8 +154,14 @@ public class Image implements Closeable {
 			return false;
 		}
 	}
-
-	public boolean revertName(int n) {
+	
+	/**
+	 * Revert the image's name to n changes ago. 
+	 * The current change is considered 1 change ago, the change before is 2 changes ago, and so on.
+	 * @param n
+	 * @return true iff reversion successful
+	 */
+	protected boolean revertName(int n) {
 		String name = log.unChange(n);
 		if (name != null) {
 			File newFile = new File(imgFile.getParentFile().getAbsolutePath() + "\\" + name);
@@ -166,9 +181,9 @@ public class Image implements Closeable {
 	/**
 	 * Remove all tags from the image name, does nothing if there are no tags.
 	 * 
-	 * @return true if revert successful.
+	 * @return true iff revert successful.
 	 */
-	public boolean revertToOriginal() {
+	protected boolean revertToOriginal() {
 		String name = this.getPath();
 		if (name.contains(Tags.PREFIX) && name.contains(".")) {
 			name = name.substring(0, name.indexOf(Tags.PREFIX)) + name.substring(name.indexOf("."));
@@ -192,9 +207,5 @@ public class Image implements Closeable {
 		imgFile = null;
 		tags = null;
 		log.close();
-	}
-
-	public boolean deleteLog() {
-		return this.log.delLog();
 	}
 }
