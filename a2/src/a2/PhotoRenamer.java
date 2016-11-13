@@ -206,11 +206,12 @@ public class PhotoRenamer implements Closeable {
 	}
 
 	public static void main(String[] args) {
-		PhotoRenamer pr = new PhotoRenamer("data/imgPaths");
+		PhotoRenamer pr = new PhotoRenamer("data/imgPaths.data");
 		Tags.load();
 		Scanner input = new Scanner(System.in);
 		int key;
 		String yn = "n";
+		String tmp;
 		boolean success = false;
 		do {
 			System.out.println("-----PhotoRenamer-----");
@@ -220,8 +221,12 @@ public class PhotoRenamer implements Closeable {
 			System.out.println("4. Settings");
 			System.out.println("0. Exit program");
 			System.out.print("Enter your selection: ");
-			key = input.nextInt();
-			// TODO: finish this shit
+			tmp = input.next();
+			try {
+				key = Integer.parseInt(tmp);
+			} catch (NumberFormatException e) {
+				key = -1;
+			}
 			switch (key) {
 			case 1: // Add new image
 				do {
@@ -230,6 +235,7 @@ public class PhotoRenamer implements Closeable {
 					String path = input.next();
 					String res = pr.addImage(path);
 					System.out.println(res);
+					pr.writeImagePaths();
 					System.out.println("Add another image? y/n");
 					yn = input.next();
 				} while (yn.matches("y"));
@@ -243,10 +249,15 @@ public class PhotoRenamer implements Closeable {
 					yn = "n";
 					System.out.println(pr);
 					System.out.print("Select image: ");
-					int idx = input.nextInt();
+					tmp = input.next();
+					try {
+						key = Integer.parseInt(tmp);
+					} catch (NumberFormatException e) {
+						key = -1;
+					}
 					Image chosen;
 					try {
-						chosen = pr.images.get(idx);
+						chosen = pr.images.get(key);
 					} catch (IndexOutOfBoundsException e) {
 						System.out.println("Image selection canceled");
 						break;
@@ -258,8 +269,13 @@ public class PhotoRenamer implements Closeable {
 					System.out.println("4. Revert to specified change");
 					System.out.println("5. Remove image");
 					System.out.println("Enter your selection:");
-					idx = input.nextInt();
-					switch (idx) {
+					tmp = input.next();
+					try {
+						key = Integer.parseInt(tmp);
+					} catch (NumberFormatException e) {
+						key = -1;
+					}
+					switch (key) {
 					case 1: // Add tag
 						do {
 							yn = "n";
@@ -299,8 +315,13 @@ public class PhotoRenamer implements Closeable {
 							success = chosen.revertName(2);
 						} else if (key == 4) {
 							System.out.print("Enter number of steps to undo: ");
-							int steps = input.nextInt();
-							success = chosen.revertName(steps);
+							tmp = input.next();
+							try {
+								key = Integer.parseInt(tmp);
+							} catch (NumberFormatException e) {
+								key = -1;
+							}
+							success = chosen.revertName(key);
 						}
 						if (success) {
 							System.out.println("Successfully reverted image name to " + chosen.getName());
@@ -338,10 +359,6 @@ public class PhotoRenamer implements Closeable {
 				System.out.println(PhotoRenamer.toString(pr.listImageByTags(tags)));
 				break;
 			case 4: // Settings
-				/*
-				 * TODO: change tags file path, change log dir, clear
-				 * data(remove all tags)
-				 */
 				System.out.println("-------Settings-------");
 				System.out.println("1. Delete all tags and restore file names");
 				System.out.println("2. Delete all data");
@@ -370,6 +387,7 @@ public class PhotoRenamer implements Closeable {
 				}
 				break;
 			case 0: // Exit program
+				break;
 			default:
 				break;
 			}

@@ -53,6 +53,7 @@ public class Image implements Closeable {
 				String[] tagsArray = tagsInName.split(Tags.PREFIX);
 				for (int i = 0; i < tagsArray.length; i++) {
 					tagsArray[i] = tagsArray[i].trim();
+					Tags.newTag(tagsArray[i]);
 				}
 				tags = new HashSet<String>(Arrays.asList(tagsArray));
 			} catch (Exception e) {
@@ -130,8 +131,7 @@ public class Image implements Closeable {
 
 	public boolean delTag(String tag) {
 		if (tags.contains(tag)) {
-			String newName = this.getPath();
-			newName.replaceFirst(Tags.PREFIX + tag, "");
+			String newName = this.getPath().replaceFirst(Tags.PREFIX + tag, "");
 			tags.remove(tag);
 			File newFile = new File(newName);
 			if (imgFile.renameTo(newFile)) {
@@ -149,8 +149,7 @@ public class Image implements Closeable {
 	public boolean revertName(int n) {
 		String name = log.unChange(n);
 		if (name != null) {
-			File newFile = new File(name);
-			imgFile.renameTo(newFile);
+			File newFile = new File(imgFile.getParentFile().getAbsolutePath() + "\\" + name);
 			if (imgFile.renameTo(newFile)) {
 				log.newChange(name);
 				imgFile = newFile;
@@ -171,7 +170,7 @@ public class Image implements Closeable {
 	 */
 	public boolean revertToOriginal() {
 		String name = this.getPath();
-		if(name.contains(Tags.PREFIX) && name.contains(".")){
+		if (name.contains(Tags.PREFIX) && name.contains(".")) {
 			name = name.substring(0, name.indexOf(Tags.PREFIX)) + name.substring(name.indexOf("."));
 		} else { // no tags
 			return true;
