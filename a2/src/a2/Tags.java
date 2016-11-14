@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -43,14 +42,13 @@ public class Tags {
 		}
 
 		String line = "";
-		String vbar = "|";
 		BufferedReader br = null;
 		try {
 			// Attempt to read from file
 			br = new BufferedReader(new FileReader(tagFile));
 			while ((line = br.readLine()) != null) {
-				// Parse each line to a tag and tag count
-				tagMap.put(line.substring(0, line.indexOf(vbar)), new Integer(line.substring(line.indexOf(vbar) + 1)));
+				// Parse each line to a tag
+				tagMap.put(line, 0);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -125,15 +123,12 @@ public class Tags {
 	public static void writeTags() {
 		FileWriter fw;
 		BufferedWriter bw = null;
-		String vbar = "|";
 		try {
 			fw = new FileWriter(tagFile);
 			bw = new BufferedWriter(fw);
-			for (Entry<String, Integer> tag : tagMap.entrySet()) {
+			for (String tag : tagMap.keySet()) {
 				try {
-					bw.write(tag.getKey());
-					bw.write(vbar);
-					bw.write(tag.getValue());
+					bw.write(tag);
 					bw.write("\n");
 				} catch (IOException e) {
 					e.printStackTrace();

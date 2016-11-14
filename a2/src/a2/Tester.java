@@ -36,7 +36,7 @@ public class Tester {
 	
 	public void testDelTag(){
 		String tag = null;
-		for (String t : testI.tags) {
+		for (String t : testI.imgTags) {
 			tag = t;
 			break;
 		}

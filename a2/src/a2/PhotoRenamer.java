@@ -11,14 +11,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
-
+/**
+ * Manages all photo renaming activity and provides a console interface.
+ */
 public class PhotoRenamer implements Closeable {
-
+	
+	/** List of Image instances */
 	private ArrayList<Image> images = new ArrayList<Image>();
-	private File imagesPath;
+	/** File where Image paths are saved to */
+	protected File imagesPath;
+	/** Directory where data (image paths, history logs, tags) are located*/
 	protected static String dataDirPath = "data/";
-
-	PhotoRenamer(String imagesPath) {
+	
+	/**
+	 * Create a new PhotoRenamer instance. Initialize the data directory and all the files needed to record data.
+	 * If the data directory exists, then attempt to load data stored.
+	 */
+	public PhotoRenamer() {
+		Tags.load();
 		String line = "";
 		// Reader to load file
 		BufferedReader br = null;
@@ -32,7 +42,7 @@ public class PhotoRenamer implements Closeable {
 		}
 		try {
 			// Attempt to read from file
-			this.imagesPath = new File(imagesPath);
+			this.imagesPath = new File(PhotoRenamer.dataDirPath + "imgPaths.data");
 			if (!this.imagesPath.exists()) {
 				this.imagesPath.createNewFile();
 			} else {
@@ -59,11 +69,22 @@ public class PhotoRenamer implements Closeable {
 			}
 		}
 	}
-
+	
+	/**
+	 * Return a list of all Image objects
+	 * @return ArrayList<Image> containing all the Images
+	 */
 	public ArrayList<Image> listImage() {
 		return new ArrayList<Image>(images);
 	}
-
+	
+	/**
+	 * Return a list of all Images tagged with the specified tags.
+	 * @param tags
+	 * 		One or more tags to be searched.
+	 * @return
+	 * 		ArrayList&lt;Image&gt; containing all Images tagged with the specified tags.
+	 */
 	public ArrayList<Image> listImageByTags(String... tags) {
 		ArrayList<Image> taggedImages = new ArrayList<Image>();
 		for (int i = 0; i < images.size(); i++) {
@@ -71,7 +92,7 @@ public class PhotoRenamer implements Closeable {
 			boolean hasAllTags = true;
 
 			for (String tag : tags) {
-				if (!curr.tags.contains(tag)) {
+				if (!curr.imgTags.contains(tag)) {
 					hasAllTags = false;
 					break;
 				}
@@ -84,7 +105,13 @@ public class PhotoRenamer implements Closeable {
 		}
 		return taggedImages;
 	}
-
+	/**
+	 * Return a list of all Images tagged with the specified tags.
+	 * @param tags
+	 * 		An ArrayList&lt;String&gt; containing tags
+	 * @return
+	 * 		ArrayList&lt;Image&gt; containing all Images tagged with the specified tags.
+	 */
 	public ArrayList<Image> listImageByTags(ArrayList<String> tags) {
 		ArrayList<Image> taggedImages = new ArrayList<Image>();
 		for (int i = 0; i < images.size(); i++) {
@@ -92,7 +119,7 @@ public class PhotoRenamer implements Closeable {
 			boolean hasAllTags = true;
 
 			for (String tag : tags) {
-				if (!curr.tags.contains(tag)) {
+				if (!curr.imgTags.contains(tag)) {
 					hasAllTags = false;
 					break;
 				}
@@ -105,7 +132,14 @@ public class PhotoRenamer implements Closeable {
 		}
 		return taggedImages;
 	}
-
+	
+	/**
+	 * Add a new image to images using a imgPath, return the result in a string message.
+	 * @param imgPath
+	 * 		Path to the image file.
+	 * @return
+	 * 		Message related to the addition's result.
+	 */
 	public String addImage(String imgPath) {
 		for (int i = 0; i < images.size(); i++) {
 			if (images.get(i).getPath().equals(imgPath)) {
@@ -120,11 +154,20 @@ public class PhotoRenamer implements Closeable {
 			return "Image file not found.";
 		}
 	}
-
+	
+	/**
+	 * Delete an image. If clearData is set to true, the logs related to image will be reverted
+	 * @param img
+	 * 		Image object to be deleted
+	 * @param clearData
+	 * 		true if deletion of data is desired
+	 * @return
+	 * 		Message related to the deletion's result.
+	 */
 	public String delImage(Image img, boolean clearData) {
 		if (images.remove(img)) {
 			if (clearData) {
-				img.revertName(0);
+				img.revertToOriginal();
 				img.log.delete();
 				return img.imageName() + " removed, data cleared.";
 			} else {
@@ -134,7 +177,10 @@ public class PhotoRenamer implements Closeable {
 			return img.imageName() + "not successfully removed.";
 		}
 	}
-
+	
+	/**
+	 * Record the canonical paths of all Image objects in the file located at imagesPath
+	 */
 	public void writeImagePaths() {
 		BufferedWriter bw = null;
 		try {
@@ -157,10 +203,20 @@ public class PhotoRenamer implements Closeable {
 		}
 	}
 
+	/**
+	 * Return the string representation of the list of Image.
+	 * 
+	 * @return String representation of images
+	 */
 	public String toString() {
 		return PhotoRenamer.toString(images);
 	}
-
+	/**
+	 * Return the string representation of the ArrayList&lt;Image&gt; images
+	 * 
+	 * @param images: an array list of image objects
+	 * @return String representation of images
+	 */
 	public static String toString(ArrayList<Image> images) {
 		StringBuffer str = new StringBuffer();
 		for (int i = 0; i < images.size(); i++) {
@@ -171,7 +227,10 @@ public class PhotoRenamer implements Closeable {
 		}
 		return str.toString();
 	}
-
+	
+	/**
+	 * Delete all data files generated by PhotoRenamer and related programs.
+	 */
 	public void clearData() {
 		File dataDir = new File(PhotoRenamer.dataDirPath);
 		for (int i = 0; i < images.size(); i++) {
@@ -183,7 +242,12 @@ public class PhotoRenamer implements Closeable {
 			dataDir.delete();
 		}
 	}
-
+	
+	/**
+	 * Helper function, recursively delete a directory and it's contents.
+	 * 
+	 * @param del
+	 */
 	private void clearDir(File del) {
 		if (del.isDirectory()) {
 			File[] sub = del.listFiles();
@@ -205,10 +269,11 @@ public class PhotoRenamer implements Closeable {
 		images = null;
 		imagesPath = null;
 	}
-
+	/**
+	 * Console interface of PhotoRenamer
+	 */
 	public static void main(String[] args) {
-		PhotoRenamer pr = new PhotoRenamer("data/imgPaths.data");
-		Tags.load();
+		PhotoRenamer pr = new PhotoRenamer();
 		Scanner input = new Scanner(System.in);
 		int key;
 		String yn = "n";
@@ -283,7 +348,7 @@ public class PhotoRenamer implements Closeable {
 						do {
 							yn = "n";
 							System.out.println("Current tags:");
-							System.out.println(chosen.tags);
+							System.out.println(chosen.imgTags);
 							System.out.print("Enter a tag: ");
 							String tag = input.next();
 							if (chosen.addTag(tag)) {
@@ -297,13 +362,13 @@ public class PhotoRenamer implements Closeable {
 						break;
 					case 2: // Del tag
 						do {
-							if (chosen.tags.size() == 0) {
+							if (chosen.imgTags.size() == 0) {
 								System.out.println(chosen.getName() + " has no tags.");
 								break;
 							}
 							yn = "n";
 							System.out.println("Current tags:");
-							System.out.println(chosen.tags);
+							System.out.println(chosen.imgTags);
 							System.out.print("Enter a tag: ");
 							String tag = input.next();
 							if (chosen.delTag(tag)) {
@@ -370,7 +435,8 @@ public class PhotoRenamer implements Closeable {
 				if(!tagsByUsage.isEmpty()){
 					int i = 1;
 					for (Map.Entry<String, Integer> tag : tagsByUsage.entrySet()) {
-						System.out.printf("%d %s, used %d times.", i, tag.getKey(), tag.getValue());
+						System.out.printf("[%d] %s, tagged to %d images.\n", i, tag.getKey(), tag.getValue());
+						i += 1;
 					}
 				} else {
 					System.out.println("There are no tags yet.");
