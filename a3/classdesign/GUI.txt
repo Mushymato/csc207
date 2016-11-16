@@ -1,0 +1,15 @@
++Class GraphicUserInterface
+-----Attribute-----
+-frame: JFrame
+-photo: JPanel
+------Methods------
++main(): void
+
+-Class PhotoPanel
+
+Responsibilities
+	Provide graphical user interface to backend methods
+	Locate image files in the file system
+Collaborators
+	PhotoRenamer
+	Tags

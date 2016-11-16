@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Scanner;
+import javax.activation.MimetypesFileTypeMap;
 
 /**
  * Manages all photo renaming activity and provides a console interface.

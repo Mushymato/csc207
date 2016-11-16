@@ -1,0 +1,31 @@
++Class PhotoRenamer implements Closable
+-----Attribute-----
+-images: java.util.ArrayList<Image>
+-imagesPath: java.io.File
+#tagsPath: String
+#logDir: String
+------Methods------
++PhotoRenamer(String imagePaths)
++listImage(): java.util.ArrayList<Image>
++listImageByTags(String... tag): java.util.ArrayList<Image>
++listImageByTags(java.util.ArrayList<String> tags): java.util.ArrayList<Image>
++newImage(Image img): boolean
++writeImagePaths(): void
++toString(): String
++toString(ArrayList<Image> images): String
++close(): void
++main(String[] args): void
+
+Responsibilities:
+	Load list of known Image objects from file
+	Provide a command line interface that can:
+		Load image by path
+		Add/delete tags of an image
+		List all tags of an image
+		List all images under a tag
+		Revert changes
+		Manage Application Settings including log storage paths
+	Write list of known Image objects to file
+Collaborators:
+	Image: Manage tag changes for a particular image
+	Tags: Manage known tags

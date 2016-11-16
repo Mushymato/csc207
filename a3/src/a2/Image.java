@@ -9,8 +9,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.activation.MimetypesFileTypeMap;
-
 /** Manages an image file and tag add/remove operations */
 public class Image implements Closeable {
 	/** Location of the image file */
@@ -33,32 +31,17 @@ public class Image implements Closeable {
 		// Only initialize Image if file exist, file is a File, and file name
 		// contains a '.'
 		if (imgFile.exists()) {
-			String type = new MimetypesFileTypeMap().getContentType(imgFile);
-			if(type.contains("image")){
+			if (imgFile.isFile() && imgFile.getName().contains(".")) {
 				this.log = new History(this);
 				this.updateTags();
 			} else {
-				throw new FileNotFoundException(imgFile.getAbsolutePath() + " is not an image file.");
+				throw new FileNotFoundException(path + " is not an image file.");
 			}
 		} else {
 			throw new FileNotFoundException(path + " does not exist.");
 		}
 	}
 
-	protected Image(File img) throws FileNotFoundException{
-		if (img.exists()) {
-			String type = new MimetypesFileTypeMap().getContentType(img);
-			if(type.contains("image")){
-				this.imgFile = img;
-				this.log = new History(this);
-				this.updateTags();
-			} else {
-				throw new FileNotFoundException(img.getAbsolutePath() + " is not an image file.");
-			}
-		} else {
-			throw new FileNotFoundException(img.getAbsolutePath() + " does not exist.");
-		}
-	}
 	/**
 	 * Reads Tags from the name of imgFile. Based Tags.PREFIX. It is assumed
 	 * that tags are contained after the first instance of Tags.PREFIX.
