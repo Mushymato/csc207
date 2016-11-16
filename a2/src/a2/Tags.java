@@ -22,17 +22,17 @@ public class Tags {
 
 	/** Prefix of a tag */
 	public static final String PREFIX = "@";
-	/** Map of tags and usage count*/
+	/** Map of tags and usage count */
 	private static HashMap<String, Integer> tagMap = new HashMap<String, Integer>();
 	/** Location of the tags file */
 	private static File tagFile;
 
 	/**
-	 * Load tags from the tags file Read and add each line as a tag. 
-	 * Each line is a tag and the usage count of the tag.
+	 * Load tags from the tags file Read and add each line as a tag. Each line
+	 * is a tag and the usage count of the tag.
 	 */
 	public static void load() {
-		tagFile = new File(PhotoRenamer.dataDirPath + "tags.data");
+		tagFile = new File(PRWrapper.dataDirPath + "tags.data");
 		if (!tagFile.exists()) {
 			try {
 				tagFile.createNewFile();
@@ -65,8 +65,8 @@ public class Tags {
 	}
 
 	/**
-	 * Add a new tag to tagMap if there are no tags of the same name. 
-	 * Otherwise, increase tag usage count by 1.
+	 * Add a new tag to tagMap if there are no tags of the same name. Otherwise,
+	 * increase tag usage count by 1.
 	 * 
 	 * @param tag
 	 */
@@ -77,16 +77,16 @@ public class Tags {
 			tagMap.put(tag, 1);
 		}
 	}
-	
+
 	/**
 	 * Lower the tag usage count by 1. If the usage count is 0, remove the tag.
 	 * 
 	 * @param tag
 	 */
-	public static void removeTag(String tag){
-		if (tagMap.containsKey(tag)){
+	public static void removeTag(String tag) {
+		if (tagMap.containsKey(tag)) {
 			tagMap.put(tag, tagMap.get(tag) - 1);
-			if(tagMap.get(tag) == 0){
+			if (tagMap.get(tag) == 0) {
 				tagMap.remove(tag);
 			}
 		}
@@ -100,21 +100,30 @@ public class Tags {
 	public static HashSet<String> getTags() {
 		return new HashSet<String>(tagMap.keySet());
 	}
-	
+
 	/**
-	 * Return a map sorted by value such that the most used tag is the first element of the Map followed by the second most used, etc.
+	 * Return a map sorted by value such that the most used tag is the first
+	 * element of the Map followed by the second most used, etc.
+	 * Obtained from: http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
+	 * 
 	 * @return Map sorted by tag usage count.
 	 */
-	public static Map<String, Integer> getTagUsage(){
-	    return tagMap.entrySet() // Compare entries
-	              .stream() // Get sequential stream
-	              .sorted(Map.Entry.comparingByValue(Collections.reverseOrder())) //Compare each entry in reverse order
-	              .collect(Collectors.toMap( // Collect sorted results back into a Map
-	                Map.Entry::getKey, //Key is still key, value is still value
-	                Map.Entry::getValue, // :: operator allows passing methods as parameters
-	                (e1, e2) -> e1, // Merge function
-	                LinkedHashMap::new // new LinkedHashMap to recieve
-	              ));
+	public static Map<String, Integer> getTagUsage() {
+		return tagMap.entrySet() // Compare entries
+				.stream() // Get sequential stream
+				.sorted(// Compare each entry in reverse order
+						Map.Entry.comparingByValue(Collections.reverseOrder())) 
+				// Collect sorted results back into a Map
+				.collect(Collectors.toMap( 
+						// Key is still key, value is still value
+						Map.Entry::getKey, 
+						// :: operator allows passing methods as parameters
+						Map.Entry::getValue, 
+						// Merge function
+						(e1, e2) -> e1, 
+						// new LinkedHashMap to recieve
+						LinkedHashMap::new 
+		));
 	}
 
 	/**
@@ -134,8 +143,8 @@ public class Tags {
 					e.printStackTrace();
 				}
 			}
-		} catch (FileNotFoundException e){
-			//do nothing
+		} catch (FileNotFoundException e) {
+			// do nothing
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

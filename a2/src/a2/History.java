@@ -38,7 +38,7 @@ public class History implements Closeable {
 	 */
 	protected History(Image img) {
 		this.imgName = img.imageName(); // store name
-		this.logFilePath = PhotoRenamer.dataDirPath + this.imgName + ".log";
+		this.logFilePath = PRWrapper.dataDirPath + this.imgName + ".log";
 		File logFile = new File(logFilePath);
 		// Make new file if no file exists
 		if (!logFile.exists()) {

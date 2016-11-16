@@ -55,8 +55,5 @@ public class Tester {
 	}
 	
 	public static void main(String[] args) {
-		Tags.load();
-		System.out.println(Tags.getTags());
-		System.out.println(Tags.getTagUsage());
 	}
 }
