@@ -275,6 +275,10 @@ public class Image implements Closeable {
 	public Map<Timestamp, String> getRedo() {
 		return this.imgHistory.getLog();
 	}
+	
+	public File getImageFile(){
+		return this.imgFile;
+	}
 
 	@Override
 	public void close() {
