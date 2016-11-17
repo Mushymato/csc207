@@ -1,12 +1,18 @@
 package photo_renamer;
 
 import javax.swing.*;
-import org.junit.*;
 
 public class PhotoRenamer {
 	JFrame appFrame;
+	JFileChooser dirChooser;
+	JPanel imgPanel;
 	
-	public static void main(String[] args) {
-		Assert.assertEquals(1000, 1000);
+	
+	PhotoRenamer(){		
+		// declare directory chooser
+		dirChooser = new JFileChooser();
+		dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
+		
 	}
 }

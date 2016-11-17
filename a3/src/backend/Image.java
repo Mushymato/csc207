@@ -1,13 +1,16 @@
-package a2;
+package backend;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import javax.imageio.ImageIO;
 
 /** Manages an image file and tag add/remove operations */
 public class Image implements Closeable {
@@ -16,7 +19,7 @@ public class Image implements Closeable {
 	/** Tags associated with this image file */
 	protected HashSet<String> imgTags = new HashSet<String>();
 	/** Change log associated with this image file */
-	protected History log;
+	protected History imgHistory;
 
 	/**
 	 * Create new Image object using a path
@@ -26,26 +29,56 @@ public class Image implements Closeable {
 	 * @throws FileNotFoundException
 	 *             If file does not exist or file does not have a extension
 	 */
-	protected Image(String path) throws FileNotFoundException {
+	protected Image(String path) throws FileNotFoundException, IllegalArgumentException {
 		imgFile = new File(path);
 		// Only initialize Image if file exist, file is a File, and file name
 		// contains a '.'
 		if (imgFile.exists()) {
-			if (imgFile.isFile() && imgFile.getName().contains(".")) {
-				this.log = new History(this);
+			String[] types = ImageIO.getReaderFileSuffixes();
+			boolean isImage = false;
+			for (int i = 0; i < types.length; i++) {
+				if (path.endsWith(types[i])) {
+					isImage = true;
+					break;
+				}
+			}
+			if (isImage) {
+				this.imgHistory = new History(this);
 				this.updateTags();
 			} else {
-				throw new FileNotFoundException(path + " is not an image file.");
+				throw new IllegalArgumentException(imgFile.getName() + " is not an image file.");
 			}
 		} else {
-			throw new FileNotFoundException(path + " does not exist.");
+			throw new FileNotFoundException(imgFile.getName() + " does not exist.");
+		}
+	}
+
+	protected Image(File img) throws FileNotFoundException, IllegalArgumentException {
+		if (img.exists()) {
+			String[] types = ImageIO.getReaderFileSuffixes();
+			boolean isImage = false;
+			for (int i = 0; i < types.length; i++) {
+				if (img.getAbsolutePath().endsWith(types[i])) {
+					isImage = true;
+					break;
+				}
+			}
+			if (isImage) {
+				this.imgFile = img;
+				this.imgHistory = new History(this);
+				this.updateTags();
+			} else {
+				throw new IllegalArgumentException(img.getName() + " is not an image file.");
+			}
+		} else {
+			throw new FileNotFoundException(img.getName() + " does not exist.");
 		}
 	}
 
 	/**
 	 * Reads Tags from the name of imgFile. Based Tags.PREFIX. It is assumed
-	 * that tags are contained after the first instance of Tags.PREFIX.
-	 * Update any
+	 * that tags are contained after the first instance of Tags.PREFIX. Update
+	 * any
 	 */
 	private void updateTags() {
 		String dot = ".";
@@ -71,7 +104,8 @@ public class Image implements Closeable {
 				while (it.hasNext()) {
 					String tag = it.next();
 					if (!newTags.contains(tag)) {
-						// Remove any tags that will no longer be tagged to this image
+						// Remove any tags that will no longer be tagged to this
+						// image
 						Tags.removeTag(tag);
 						it.remove();
 					}
@@ -142,7 +176,7 @@ public class Image implements Closeable {
 			boolean success = imgFile.renameTo(newFile);
 			if (success) {
 				imgFile = newFile;
-				log.newChange(this.getName());
+				imgHistory.newChange(this.getName());
 			}
 			return success;
 		} else {
@@ -168,7 +202,7 @@ public class Image implements Closeable {
 			if (imgFile.renameTo(newFile)) {
 				Tags.removeTag(tag);
 				imgFile = newFile;
-				log.newChange(newName);
+				imgHistory.newChange(newName);
 				return true;
 			} else {
 				return false;
@@ -180,17 +214,25 @@ public class Image implements Closeable {
 
 	/**
 	 * Revert the image's name to n changes ago. The current change is
-	 * considered 1 change ago, the change before is 2 changes ago, and so on.
+	 * considered 0 change ago, the change before is 1 changes ago, the first
+	 * undone change is -1, etc.
 	 * 
 	 * @param n
 	 * @return true iff reversion successful
 	 */
 	protected boolean revertName(int n) {
-		String name = log.unChange(n);
+		String name = null;
+		if (n < 0) {
+			name = imgHistory.reChange(n);
+		} else if (n > 0) {
+			name = imgHistory.unChange(n);
+		} else {
+			return true;
+		}
+		name = imgHistory.unChange(n);
 		if (name != null) {
 			File newFile = new File(imgFile.getParentFile().getAbsolutePath() + "\\" + name);
 			if (imgFile.renameTo(newFile)) {
-				log.newChange(name);
 				imgFile = newFile;
 				this.updateTags();
 				return true;
@@ -217,7 +259,7 @@ public class Image implements Closeable {
 		File newFile = new File(name);
 		imgFile.renameTo(newFile);
 		if (imgFile.renameTo(newFile)) {
-			log.newChange(name);
+			imgHistory.newChange(name);
 			imgFile = newFile;
 			this.updateTags();
 			return true;
@@ -226,10 +268,18 @@ public class Image implements Closeable {
 		}
 	}
 
+	public Map<Timestamp, String> getLog() {
+		return this.imgHistory.getLog();
+	}
+
+	public Map<Timestamp, String> getRedo() {
+		return this.imgHistory.getLog();
+	}
+
 	@Override
 	public void close() {
 		imgFile = null;
 		imgTags = null;
-		log.close();
+		imgHistory.close();
 	}
 }

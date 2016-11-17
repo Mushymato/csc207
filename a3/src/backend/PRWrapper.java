@@ -78,7 +78,7 @@ public class PRWrapper implements Closeable {
 	 * @return ArrayList<Image> containing all the Images
 	 */
 	public ArrayList<Image> listImage() {
-		return new ArrayList<Image>(images);
+		return images;
 	}
 
 	/**
@@ -109,24 +109,6 @@ public class PRWrapper implements Closeable {
 		}
 		return taggedImages;
 	}
-
-	// public ArrayList<String> listImagePathsInDir(String dirPath) {
-	// ArrayList<String> dirImages = new ArrayList<String>();
-	// File dir = new File(dirPath);
-	// File[] dirFiles;
-	// if(dir.exists() && dir.isDirectory()){
-	// dirFiles = dir.listFiles();
-	// } else {
-	// return null;
-	// }
-	// for (int i = 0; i < dirFiles.length; i++) {
-	// String type = new MimetypesFileTypeMap().getContentType(dirFiles[i]);
-	// if(type.contains("image")){
-	// dirImages.add(dirFiles[i].getAbsolutePath());
-	// }
-	// }
-	// return dirImages;
-	// }
 
 	/**
 	 * Return a list of all Images tagged with the specified tags.
