@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -56,7 +57,6 @@ public class PRWrapper implements Closeable {
 					} catch (FileNotFoundException e) {
 						continue;
 					}
-					line = br.readLine();
 				}
 			}
 		} catch (IOException e) {
@@ -78,7 +78,7 @@ public class PRWrapper implements Closeable {
 	 * 
 	 * @return ArrayList<Image> containing all the Images
 	 */
-	public ArrayList<Image> listImage() {
+	public List<Image> listImage() {
 		return images;
 	}
 
@@ -90,7 +90,7 @@ public class PRWrapper implements Closeable {
 	 * @return ArrayList&lt;Image&gt; containing all Images tagged with the
 	 *         specified tags.
 	 */
-	public ArrayList<Image> listImageByTags(String... tags) {
+	public List<Image> listImageByTags(String... tags) {
 		ArrayList<Image> taggedImages = new ArrayList<Image>();
 		for (int i = 0; i < images.size(); i++) {
 			Image curr = images.get(i);
@@ -119,7 +119,7 @@ public class PRWrapper implements Closeable {
 	 * @return ArrayList&lt;Image&gt; containing all Images tagged with the
 	 *         specified tags.
 	 */
-	public ArrayList<Image> listImageByTags(ArrayList<String> tags) {
+	public List<Image> listImageByTags(ArrayList<String> tags) {
 		ArrayList<Image> taggedImages = new ArrayList<Image>();
 		for (int i = 0; i < images.size(); i++) {
 			Image curr = images.get(i);
@@ -261,6 +261,7 @@ public class PRWrapper implements Closeable {
 
 	/**
 	 * Return the string representation of the list of Image.
+	 * @param list 
 	 * 
 	 * @return String representation of images
 	 */
@@ -275,7 +276,7 @@ public class PRWrapper implements Closeable {
 	 *            an array list of image objects
 	 * @return String representation of images
 	 */
-	public static String toString(ArrayList<Image> images) {
+	public static String toString(List<Image> images) {
 		StringBuffer str = new StringBuffer();
 		for (int i = 0; i < images.size(); i++) {
 			str.append("[" + i + "]");
