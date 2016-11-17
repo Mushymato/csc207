@@ -1,4 +1,4 @@
-package a2;
+package backend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -89,44 +89,44 @@ public class PRWrapper implements Closeable {
 	 * @return ArrayList&lt;Image&gt; containing all Images tagged with the
 	 *         specified tags.
 	 */
-//	public ArrayList<Image> listImageByTags(String... tags) {
-//		ArrayList<Image> taggedImages = new ArrayList<Image>();
-//		for (int i = 0; i < images.size(); i++) {
-//			Image curr = images.get(i);
-//			boolean hasAllTags = true;
-//
-//			for (String tag : tags) {
-//				if (!curr.imgTags.contains(tag)) {
-//					hasAllTags = false;
-//					break;
-//				}
-//			}
-//
-//			if (hasAllTags) {
-//				taggedImages.add(curr);
-//			}
-//
-//		}
-//		return taggedImages;
-//	}
+	public ArrayList<Image> listImageByTags(String... tags) {
+		ArrayList<Image> taggedImages = new ArrayList<Image>();
+		for (int i = 0; i < images.size(); i++) {
+			Image curr = images.get(i);
+			boolean hasAllTags = true;
 
-//	public ArrayList<String> listImagePathsInDir(String dirPath) {
-//		ArrayList<String> dirImages = new ArrayList<String>();
-//		File dir = new File(dirPath);
-//		File[] dirFiles;
-//		if(dir.exists() && dir.isDirectory()){
-//			dirFiles = dir.listFiles(); 
-//		} else {
-//			return null;
-//		}
-//		for (int i = 0; i < dirFiles.length; i++) {
-//			String type = new MimetypesFileTypeMap().getContentType(dirFiles[i]);
-//			if(type.contains("image")){
-//				dirImages.add(dirFiles[i].getAbsolutePath());
-//			}
-//		}
-//		return dirImages;
-//	}
+			for (String tag : tags) {
+				if (!curr.imgTags.contains(tag)) {
+					hasAllTags = false;
+					break;
+				}
+			}
+
+			if (hasAllTags) {
+				taggedImages.add(curr);
+			}
+
+		}
+		return taggedImages;
+	}
+
+	// public ArrayList<String> listImagePathsInDir(String dirPath) {
+	// ArrayList<String> dirImages = new ArrayList<String>();
+	// File dir = new File(dirPath);
+	// File[] dirFiles;
+	// if(dir.exists() && dir.isDirectory()){
+	// dirFiles = dir.listFiles();
+	// } else {
+	// return null;
+	// }
+	// for (int i = 0; i < dirFiles.length; i++) {
+	// String type = new MimetypesFileTypeMap().getContentType(dirFiles[i]);
+	// if(type.contains("image")){
+	// dirImages.add(dirFiles[i].getAbsolutePath());
+	// }
+	// }
+	// return dirImages;
+	// }
 
 	/**
 	 * Return a list of all Images tagged with the specified tags.
@@ -165,9 +165,9 @@ public class PRWrapper implements Closeable {
 	 *            Path to the image file.
 	 * @return Message related to the addition's result.
 	 */
-	public String addImage(String imgPath) {
+	private String addImage(String imgPath) {
 		for (int i = 0; i < images.size(); i++) {
-			if (images.get(i).getPath().equals(imgPath)) {
+			if (images.get(i).getPath().endsWith(imgPath)) {
 				return "Image has already been added.";
 			}
 		}
@@ -178,6 +178,52 @@ public class PRWrapper implements Closeable {
 		} catch (FileNotFoundException e) {
 			return "Image file not found.";
 		}
+	}
+
+	/**
+	 * Add a new image to images using a File, return the added Image.
+	 * 
+	 * @param img
+	 *            A file that points to a image
+	 * @return The newly added image object.
+	 * @throws IllegalArgumentException:
+	 *             Image has already been added
+	 * @throws FileNotFoundException:
+	 *             Image is not found
+	 */
+	public Image addImage(File img) throws IllegalArgumentException, FileNotFoundException {
+		for (int i = 0; i < images.size(); i++) {
+			try {
+				if (images.get(i).getPath() == img.getCanonicalPath()) {
+					throw new IllegalArgumentException("Image has already been added.");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			Image newImage = new Image(img);
+			images.add(newImage);
+			return newImage;
+		} catch (FileNotFoundException | IllegalArgumentException e) {
+			throw e;
+		}
+	}
+
+	public ArrayList<Image> addImagesInDir(File dir) {
+		ArrayList<Image> imgInDir = new ArrayList<Image>();
+		if (dir.isDirectory()) {
+			File[] dirFiles = dir.listFiles();
+			for (int i = 0; i < dirFiles.length; i++) {
+				try {
+					Image current = new Image(dirFiles[i]);
+					imgInDir.add(current);
+				} catch (FileNotFoundException | IllegalArgumentException e) {
+					// do nothing
+				}
+			}
+		}
+		return imgInDir;
 	}
 
 	/**
@@ -194,7 +240,7 @@ public class PRWrapper implements Closeable {
 		if (images.remove(img)) {
 			if (clearData) {
 				img.revertToOriginal();
-				img.log.delete();
+				img.imgHistory.delete();
 				return img.imageName() + " removed, data cleared.";
 			} else {
 				return img.imageName() + " removed.";
@@ -263,7 +309,7 @@ public class PRWrapper implements Closeable {
 	public void clearData() {
 		File dataDir = new File(PRWrapper.dataDirPath);
 		for (int i = 0; i < images.size(); i++) {
-			images.get(i).log.delete();
+			images.get(i).imgHistory.delete();
 			images.get(i).revertToOriginal();
 		}
 		if (dataDir.exists()) {
@@ -410,18 +456,18 @@ public class PRWrapper implements Closeable {
 							yn = input.next();
 						} while (yn.matches("y"));
 						break;
-					case 3: // revert 2
+					case 3: // revert 1
 					case 4: // revert n
 						success = false;
 						if (key == 3) {
-							success = chosen.revertName(2);
+							success = chosen.revertName(1);
 						} else if (key == 4) {
 							System.out.print("Enter number of steps to undo: ");
 							tmp = input.next();
 							try {
 								key = Integer.parseInt(tmp);
 							} catch (NumberFormatException e) {
-								key = -1;
+								key = 0;
 							}
 							success = chosen.revertName(key);
 						}

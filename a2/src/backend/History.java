@@ -1,4 +1,4 @@
-package a2;
+package backend;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,6 +9,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -19,7 +22,11 @@ import java.util.TreeMap;
 public class History implements Closeable {
 
 	/** A Map that maps a Timestamp to a name change (String). */
-	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>();
+	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>(Collections.reverseOrder());
+	/**
+	 * Maps a Timestamp to a name change (String), retains undone log entries
+	 */
+	private TreeMap<Timestamp, String> redoLog = new TreeMap<Timestamp, String>();
 	/** The files in which changes are recorded. */
 	private String logFilePath;
 	/** Name of the Image this History instance is associated with. */
@@ -105,46 +112,77 @@ public class History implements Closeable {
 			currTime.setTime(currTime.getTime() + 1);
 		}
 		log.put(currTime, change);
+		redoLog = new TreeMap<Timestamp, String>();
 	}
 
 	/**
-	 * Reverts to the nth most recent change. Does not delete log entries, just
-	 * adds a new one with the reverting change. The bounds of n is (2,
-	 * log.size). If n is out of bounds, revert to the very first change
+	 * Reverts to the nth most recent change. Moves all changes between current
+	 * and nth most recent change to redoLog. The bounds of n is (1,
+	 * log.size). If n is out of bounds, revert to the very first change.
 	 * 
 	 * @param n
-	 *            Number of changes ago.
-	 * @return the reverted change, or null if no change occurs at time.
+	 *            Number of changes to undo.
+	 * @return the reverted change, or null if log is empty
 	 */
 	protected String unChange(int n) {
-		if (n < 2 || n > log.size()) {
+		if (n < 1 || n > log.size()) {
 			n = log.size();
 		}
-		for (Timestamp change : log.descendingKeySet()) {
-			n -= 1;
+		Iterator<Entry<Timestamp, String>> it = log.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Timestamp, String> current = it.next();
 			if (n == 0) {
-				return this.unChange(change);
+				this.newChange(current.getValue());
+				return current.getValue();
 			}
+			n -= 1;
+			redoLog.entrySet().add(current);
+			it.remove();
 		}
 		return null;
 	}
 
 	/**
-	 * Reverts to the change made at the specified Timestamp. Does not delete
-	 * log entries, just adds a new one with the reverting change.
+	 * Redo n changes previously undone by unChange(). Moves the redone changes
+	 * from redoLog to log. The bounds of n is (-redoLog.size, -1). If n is out
+	 * of bounds, revert to the most recent change by time in redoLog
 	 * 
-	 * @param time
-	 *            The specified time.
-	 * @return the reverted change, or null if no change occurs at time
+	 * @param n
+	 *            Number of changes to redo.
+	 * @return the reverted change, or null if redoLog is empty
 	 */
-	protected String unChange(Timestamp time) {
-		String revert = log.get(time);
-		if (revert == null) {
-			return null;
+	protected String reChange(int n) {
+		if (n > -1 || n < -redoLog.size()) {
+			n = -redoLog.size();
 		}
-		this.newChange(revert);
-		return revert;
+		Iterator<Entry<Timestamp, String>> it = redoLog.entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Timestamp, String> current = it.next();
+			n += 1;
+			if (n == 0) {
+				return current.getValue();
+			}
+			log.entrySet().add(current);
+			it.remove();
+		}
+		return null;
 	}
+
+	// /**
+	// * Reverts to the change made at the specified Timestamp. Does not delete
+	// * log entries, just adds a new one with the reverting change.
+	// *
+	// * @param time
+	// * The specified time.
+	// * @return the reverted change, or null if no change occurs at time
+	// */
+	// private String getLogEntry(Timestamp time) {
+	// String logEntry = log.get(time);
+	// if (logEntry == null) {
+	// return null;
+	// }
+	// return logEntry;
+	// }
 
 	/**
 	 * Record all History log entries to the .log file stored at logFilePath
@@ -190,10 +228,19 @@ public class History implements Closeable {
 		}
 	}
 
+	protected Map<Timestamp, String> getLog() {
+		return this.log;
+	}
+
+	protected Map<Timestamp, String> getRedo() {
+		return this.redoLog;
+	}
+
 	@Override
 	public void close() {
 		this.writeLog();
 		log = null;
+		redoLog = null;
 		logFilePath = null;
 		imgName = null;
 	}
