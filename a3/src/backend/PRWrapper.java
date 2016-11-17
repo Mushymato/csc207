@@ -56,6 +56,7 @@ public class PRWrapper implements Closeable {
 					} catch (FileNotFoundException e) {
 						continue;
 					}
+					line = br.readLine();
 				}
 			}
 		} catch (IOException e) {
