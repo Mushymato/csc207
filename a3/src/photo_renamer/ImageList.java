@@ -1,6 +1,5 @@
 package photo_renamer;
 
-import java.awt.Dimension;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -28,7 +27,6 @@ public class ImageList extends JPanel {
 	ImageList() {
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		//this.setPreferredSize(PhotoRenamer.size);
 		
 		JFileChooser dirChooser = new JFileChooser();
 		dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -40,11 +38,6 @@ public class ImageList extends JPanel {
 		imgPane.add(imgList);
 		this.add(dirSelect);
 		this.add(imgPane);
-	}
-
-	@Override
-	public void setPreferredSize(Dimension preferredSize) {
-		super.setPreferredSize(new Dimension((int) (preferredSize.getWidth() * 0.2), (int) preferredSize.getHeight()));
 	}
 
 }

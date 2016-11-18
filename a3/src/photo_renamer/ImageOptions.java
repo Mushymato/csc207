@@ -1,6 +1,5 @@
 package photo_renamer;
 
-import java.awt.Dimension;
 import java.sql.Timestamp;
 import java.util.Map.Entry;
 
@@ -23,14 +22,8 @@ public class ImageOptions extends JTabbedPane {
 		this.add("Properties", infoPanel);
 		this.add("History", logList);
 
-		//this.setPreferredSize(PhotoRenamer.size);
 
 		this.setVisible(true);
-	}
-
-	@Override
-	public void setPreferredSize(Dimension preferredSize) {
-		super.setPreferredSize(new Dimension((int) (preferredSize.getWidth() * 0.2), (int) preferredSize.getHeight()));
 	}
 
 	public void changeImage(Image imageObj) {

@@ -1,6 +1,5 @@
 package photo_renamer;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,15 +21,9 @@ public class ImagePanel extends JPanel {
 	 */
 	public ImagePanel() {
 		super();
-		//this.setPreferredSize(PhotoRenamer.size);
 		this.setVisible(true);
 	}
 	
-	@Override
-	public void setPreferredSize(Dimension preferredSize) {
-		super.setPreferredSize(new Dimension((int) (preferredSize.getWidth() * 0.6), (int) preferredSize.getHeight()));
-	}
-
 	/**
 	 * Change displayed image.
 	 * 
