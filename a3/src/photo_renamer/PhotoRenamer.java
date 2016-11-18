@@ -1,7 +1,9 @@
 package photo_renamer;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -34,10 +36,16 @@ public class PhotoRenamer {
 		frame.setMinimumSize(size);
 		frame.setPreferredSize(size);
 
+		// Layout
+		frame.setLayout(new GridBagLayout());
+
 		// Add components
-		frame.add(imgList, BorderLayout.WEST);
-		frame.add(imgPanel, BorderLayout.CENTER);
-		frame.add(imgOptions, BorderLayout.EAST);
+		frame.add(imgList, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
+		frame.add(imgPanel, new GridBagConstraints(1, 0, 1, 1, 6, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
+		frame.add(imgOptions, new GridBagConstraints(2, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
 
 		// Listeners
 		frame.addWindowListener(new WindowAdapter() {

@@ -23,7 +23,7 @@ public class ImageOptions extends JTabbedPane {
 		this.add("Properties", infoPanel);
 		this.add("History", logList);
 
-		this.setPreferredSize(PhotoRenamer.size);
+		//this.setPreferredSize(PhotoRenamer.size);
 
 		this.setVisible(true);
 	}

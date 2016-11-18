@@ -28,7 +28,7 @@ public class ImageList extends JPanel {
 	ImageList() {
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		this.setPreferredSize(PhotoRenamer.size);
+		//this.setPreferredSize(PhotoRenamer.size);
 		
 		JFileChooser dirChooser = new JFileChooser();
 		dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);

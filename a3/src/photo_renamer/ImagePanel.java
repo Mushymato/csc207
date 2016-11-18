@@ -22,7 +22,7 @@ public class ImagePanel extends JPanel {
 	 */
 	public ImagePanel() {
 		super();
-		this.setPreferredSize(PhotoRenamer.size);
+		//this.setPreferredSize(PhotoRenamer.size);
 		this.setVisible(true);
 	}
 	
