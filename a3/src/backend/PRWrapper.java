@@ -223,7 +223,7 @@ public class PRWrapper implements Closeable {
 		if (images.remove(img)) {
 			if (clearData) {
 				img.revertToOriginal();
-				img.imgHistory.delete();
+				img.deleteLog();
 				return img.imageName() + " removed, data cleared.";
 			} else {
 				return img.imageName() + " removed.";
@@ -293,7 +293,7 @@ public class PRWrapper implements Closeable {
 	public void clearData() {
 		File dataDir = new File(PRWrapper.dataDirPath);
 		for (int i = 0; i < images.size(); i++) {
-			images.get(i).imgHistory.delete();
+			images.get(i).deleteLog();
 			images.get(i).revertToOriginal();
 		}
 		if (dataDir.exists()) {

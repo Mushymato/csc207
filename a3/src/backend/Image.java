@@ -9,7 +9,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.imageio.ImageIO;
 
 /** Manages an image file and tag add/remove operations */
@@ -19,7 +20,7 @@ public class Image implements Closeable {
 	/** Tags associated with this image file */
 	protected HashSet<String> imgTags = new HashSet<String>();
 	/** Change log associated with this image file */
-	protected History imgHistory;
+	private History imgHistory;
 
 	/**
 	 * Create new Image object using a path
@@ -268,16 +269,20 @@ public class Image implements Closeable {
 		}
 	}
 
-	public Map<Timestamp, String> getLog() {
+	public List<Entry<Timestamp, String>> getLog() {
 		return this.imgHistory.getLog();
 	}
 
-	public Map<Timestamp, String> getRedo() {
-		return this.imgHistory.getLog();
+	public List<Entry<Timestamp, String>> getRedo() {
+		return this.imgHistory.getRedo();
 	}
 	
 	public File getImageFile(){
 		return this.imgFile;
+	}
+	
+	public boolean deleteLog(){
+		return this.imgHistory.delete();
 	}
 
 	@Override

@@ -9,9 +9,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -22,11 +23,11 @@ import java.util.TreeMap;
 public class History implements Closeable {
 
 	/** A Map that maps a Timestamp to a name change (String). */
-	private TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>(Collections.reverseOrder());
+	protected TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>(Collections.reverseOrder());
 	/**
 	 * Maps a Timestamp to a name change (String), retains undone log entries
 	 */
-	private TreeMap<Timestamp, String> redoLog = new TreeMap<Timestamp, String>();
+	protected TreeMap<Timestamp, String> redoLog = new TreeMap<Timestamp, String>();
 	/** The files in which changes are recorded. */
 	private String logFilePath;
 	/** Name of the Image this History instance is associated with. */
@@ -117,8 +118,8 @@ public class History implements Closeable {
 
 	/**
 	 * Reverts to the nth most recent change. Moves all changes between current
-	 * and nth most recent change to redoLog. The bounds of n is (1,
-	 * log.size). If n is out of bounds, revert to the very first change.
+	 * and nth most recent change to redoLog. The bounds of n is (1, log.size).
+	 * If n is out of bounds, revert to the very first change.
 	 * 
 	 * @param n
 	 *            Number of changes to undo.
@@ -228,12 +229,12 @@ public class History implements Closeable {
 		}
 	}
 
-	protected Map<Timestamp, String> getLog() {
-		return this.log;
+	protected List<Entry<Timestamp, String>> getLog() {
+		return new ArrayList<Entry<Timestamp, String>>(this.log.entrySet());
 	}
 
-	protected Map<Timestamp, String> getRedo() {
-		return this.redoLog;
+	protected List<Entry<Timestamp,String>> getRedo() {
+		return new ArrayList<Entry<Timestamp, String>>(this.redoLog.entrySet());
 	}
 
 	@Override
