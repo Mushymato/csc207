@@ -1,31 +1,60 @@
 package photo_renamer;
 
-import java.sql.Timestamp;
-import java.util.Map.Entry;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import backend.Image;
+import javax.swing.JScrollPane;
 
-public class ImageOptions extends JTabbedPane {
+public class ImageOptions extends JPanel {
 
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 
-	private JPanel infoPanel;
-	private JList<Entry<Timestamp, String>> logList;
+	private JLabel imgName;
+	private JButton addTag;
+	private JList<String> listTags;
 
 	public ImageOptions() {
 		super();
-		infoPanel = new JPanel();
-		logList = new JList<Entry<Timestamp, String>>();
-		this.add("Properties", infoPanel);
-		this.add("History", logList);
 
+		this.setLayout(new GridBagLayout());
+		this.setAlignmentX(LEFT_ALIGNMENT);
+
+		imgName = new JLabel("Img Name");
+		imgName.setHorizontalAlignment(JLabel.CENTER);
+		addTag = new JButton("Add new Tag");
+		addTag.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		listTags = new JList<String>();
+		JScrollPane listTagsScroll = new JScrollPane(listTags);
+		
+
+		this.add(imgName, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
+		this.add(addTag, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
+		this.add(listTagsScroll, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.EAST,
+				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
 		this.setVisible(true);
 	}
 
-	public void changeImage(Image imageObj) {
+	public void changeImage() {
+		if (PhotoRenamer.getCurrentImg() != null) {
+			this.imgName.setText(PhotoRenamer.getCurrentImg().getName());
+			List<String> imgTags = PhotoRenamer.getCurrentImg().getTags();
+			imgTags.add("");
+			this.listTags.setListData(imgTags.toArray(new String[imgTags.size()]));
+		}
 	}
 }

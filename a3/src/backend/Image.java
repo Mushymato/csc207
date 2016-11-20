@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -122,7 +123,7 @@ public class Image implements Closeable {
 	 * 
 	 * @return Name of the image file
 	 */
-	protected String getName() {
+	public String getName() {
 		return imgFile.getName();
 	}
 
@@ -132,7 +133,7 @@ public class Image implements Closeable {
 	 * 
 	 * @return Path the to imgFile.
 	 */
-	protected String getPath() {
+	public String getPath() {
 		try {
 			return imgFile.getCanonicalPath();
 		} catch (IOException e) {
@@ -166,7 +167,7 @@ public class Image implements Closeable {
 	 *            The tag to be added to this Image.
 	 * @return true if a tag was successfully added to this Image.
 	 */
-	protected boolean addTag(String tag) {
+	public boolean addTag(String tag) {
 		if (imgTags.add(tag)) {
 			String dot = "\\.";
 			String path = this.getPath();
@@ -195,7 +196,7 @@ public class Image implements Closeable {
 	 * @return true if a tag was successfully added to this Image, false if
 	 *         removal unsuccessful.
 	 */
-	protected boolean delTag(String tag) {
+	public boolean delTag(String tag) {
 		if (imgTags.contains(tag)) {
 			String newName = this.getPath().replaceFirst(Tags.PREFIX + tag, "");
 			imgTags.remove(tag);
@@ -221,7 +222,7 @@ public class Image implements Closeable {
 	 * @param n
 	 * @return true iff reversion successful
 	 */
-	protected boolean revertName(int n) {
+	public boolean revertName(int n) {
 		String name = null;
 		if (n < 0) {
 			name = imgHistory.reChange(n);
@@ -250,7 +251,7 @@ public class Image implements Closeable {
 	 * 
 	 * @return true iff revert successful.
 	 */
-	protected boolean revertToOriginal() {
+	public boolean revertToOriginal() {
 		String name = this.getPath();
 		if (name.contains(Tags.PREFIX) && name.contains(".")) {
 			name = name.substring(0, name.indexOf(Tags.PREFIX)) + name.substring(name.indexOf("."));
@@ -285,6 +286,10 @@ public class Image implements Closeable {
 		return this.imgHistory.delete();
 	}
 
+	public List<String> getTags(){
+		return new ArrayList<String>(imgTags);
+	}
+	
 	@Override
 	public void close() {
 		imgFile = null;

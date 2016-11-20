@@ -10,23 +10,51 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 
 import backend.*;
 
+/**
+ * Main photo renamer class.
+ * 
+ * @author miche
+ *
+ */
 public class PhotoRenamer {
 	public static final long serialVersionUID = 5165545549804727342L;
 
+	private static JFrame frame = new JFrame("PhotoRenamer");
+	private static ImageList imgList = new ImageList();
+	private static ImagePanel imgPanel = new ImagePanel();
+	private static ImageOptions imgOptions = new ImageOptions();
+	private static HistoryList histList = new HistoryList();
+	private static JTabbedPane imgSideBar = new JTabbedPane();
+
+	private static Image currentImg = null;
+
+	protected static Image getCurrentImg() {
+		return currentImg;
+	}
+
+	protected static void setCurrentImg(Image newImg) {
+		if (newImg != null) {
+			PhotoRenamer.currentImg = newImg;
+			imgPanel.changeImage();
+			imgOptions.changeImage();
+			histList.changeImage();
+		}
+	}
+
 	public static void main(String[] args) {
 		// Instantiate components
-		JFrame frame = new JFrame("PhotoRenamer");
-		ImageList imgList = new ImageList();
-		ImagePanel imgPanel = new ImagePanel();
-		ImageOptions imgOptions = new ImageOptions();
+		imgSideBar.add("Properties", imgOptions);
+		imgSideBar.add("History", histList);
+
 		PRWrapper pr = new PRWrapper();
 
 		// Placeholder
 		List<Image> p = pr.listImage();
-		imgPanel.changeImage(p.get(4));
+		setCurrentImg(p.get(4));
 
 		// Set size
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
@@ -40,7 +68,7 @@ public class PhotoRenamer {
 				new Insets(0, 0, 0, 0), 0, 0));
 		frame.add(imgPanel, new GridBagConstraints(1, 0, 1, 1, 6, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		frame.add(imgOptions, new GridBagConstraints(2, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+		frame.add(imgSideBar, new GridBagConstraints(2, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 
 		// Listeners
