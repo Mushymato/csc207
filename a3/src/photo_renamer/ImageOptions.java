@@ -20,8 +20,6 @@ public class ImageOptions extends JPanel {
 
 	private static JLabel imgName;
 	private static JList<String> listTags;
-	private JButton addTag;
-	private JButton delTag;
 
 	public ImageOptions() {
 		super();
@@ -33,6 +31,8 @@ public class ImageOptions extends JPanel {
 		imgName.setHorizontalAlignment(JLabel.CENTER);
 		listTags = new JList<String>();
 		JScrollPane listTagsScroll = new JScrollPane(listTags);
+		JButton addTag;
+		JButton delTag;
 		addTag = new JButton("Add new Tag");
 		addTag.addActionListener(new ActionListener() {
 			@Override
@@ -41,6 +41,7 @@ public class ImageOptions extends JPanel {
 					String tag = JOptionPane.showInputDialog("Enter a tag");
 					PhotoRenamer.getCurrentImg().addTag(tag);
 					changeImage();
+					HistoryList.updateTable();
 				}
 			}
 		});
@@ -52,6 +53,7 @@ public class ImageOptions extends JPanel {
 					String tag = listTags.getSelectedValue();
 					PhotoRenamer.getCurrentImg().delTag(tag);
 					changeImage();
+					HistoryList.updateTable();
 				}
 			}
 		});
@@ -75,5 +77,5 @@ public class ImageOptions extends JPanel {
 			List<String> imgTags = PhotoRenamer.getCurrentImg().getTags();
 			listTags.setListData(imgTags.toArray(new String[imgTags.size()]));
 		}
-	}
+	}	
 }

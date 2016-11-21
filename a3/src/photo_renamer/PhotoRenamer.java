@@ -10,7 +10,6 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
 
 import backend.*;
 
@@ -28,7 +27,6 @@ public class PhotoRenamer {
 	private static final ImagePanel imgPanel = new ImagePanel();
 	private static final ImageOptions imgOptions = new ImageOptions();
 	private static final HistoryList histList = new HistoryList();
-	private static final JTabbedPane imgSideBar = new JTabbedPane();
 
 	private static Image currentImg = null;
 
@@ -40,16 +38,14 @@ public class PhotoRenamer {
 		if (newImg != null) {
 			PhotoRenamer.currentImg = newImg;
 			ImageOptions.changeImage();
+			HistoryList.updateTable();
 			imgPanel.changeImage();
-			histList.changeImage();
+			frame.pack();
 		}
 	}
 
 	public static void main(String[] args) {
 		// Instantiate components
-		imgSideBar.add("Tags", imgOptions);
-		imgSideBar.add("History", histList);
-
 		PRWrapper pr = new PRWrapper();
 
 		// Placeholder
@@ -57,20 +53,26 @@ public class PhotoRenamer {
 		setCurrentImg(p.get(4));
 
 		// Set size
-		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		size.setSize((int) (size.getWidth() * 0.5), (int) (size.getHeight() * 0.5));
-		frame.setMinimumSize(size);
-		frame.setPreferredSize(size);
-
+		Dimension frameSize = Toolkit.getDefaultToolkit().getScreenSize();
+		frameSize.setSize((int) (frameSize.width * 0.5), (int) (frameSize.height * 0.5));
+		frame.setMinimumSize(frameSize);
+		frame.setPreferredSize(frameSize);
+		Dimension sideSize = new Dimension((int)(frameSize.width * 0.2), frameSize.height);
+		imgOptions.setPreferredSize(sideSize);
+		imgList.setPreferredSize(sideSize);
+		Dimension histSize = new Dimension(frameSize.width, (int)(frameSize.height * 0.1));
+		histList.setPreferredSize(histSize);
+		
 		// Layout & components
 		frame.setLayout(new GridBagLayout());
-		frame.add(imgList, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+		frame.add(imgList, new GridBagConstraints(0, 0, 1, 7, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		frame.add(imgPanel, new GridBagConstraints(1, 0, 1, 1, 6, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+		frame.add(imgPanel, new GridBagConstraints(1, 0, 3, 5, 10, 10, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		frame.add(imgSideBar, new GridBagConstraints(2, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+		frame.add(imgOptions, new GridBagConstraints(4, 0, 1, 7, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));		
+		frame.add(histList, new GridBagConstraints(1, 5, 1, 2, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		
 		
 
 		// Listeners

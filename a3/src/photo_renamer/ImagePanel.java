@@ -29,7 +29,6 @@ public class ImagePanel extends JPanel {
 	public void changeImage() {
 		try {
 			img = ImageIO.read(PhotoRenamer.getCurrentImg().getImageFile());
-			this.repaint();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -204,7 +204,7 @@ public class Image implements Closeable {
 			if (imgFile.renameTo(newFile)) {
 				Tags.removeTag(tag);
 				imgFile = newFile;
-				imgHistory.newChange(newName);
+				imgHistory.newChange(this.getName());
 				return true;
 			} else {
 				return false;
@@ -270,11 +270,11 @@ public class Image implements Closeable {
 		}
 	}
 
-	public List<Entry<Timestamp, String>> getLog() {
+	public Map<Timestamp, String> getLog() {
 		return this.imgHistory.getLog();
 	}
 
-	public List<Entry<Timestamp, String>> getRedo() {
+	public Map<Timestamp, String> getRedo() {
 		return this.imgHistory.getRedo();
 	}
 	

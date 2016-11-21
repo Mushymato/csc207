@@ -9,10 +9,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -23,7 +21,7 @@ import java.util.TreeMap;
 public class History implements Closeable {
 
 	/** A Map that maps a Timestamp to a name change (String). */
-	protected TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>(Collections.reverseOrder());
+	protected TreeMap<Timestamp, String> log = new TreeMap<Timestamp, String>();
 	/**
 	 * Maps a Timestamp to a name change (String), retains undone log entries
 	 */
@@ -129,7 +127,7 @@ public class History implements Closeable {
 		if (n < 1 || n > log.size()) {
 			n = log.size();
 		}
-		Iterator<Entry<Timestamp, String>> it = log.entrySet().iterator();
+		Iterator<Entry<Timestamp, String>> it = log.descendingMap().entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<Timestamp, String> current = it.next();
 			if (n == 0) {
@@ -156,7 +154,7 @@ public class History implements Closeable {
 		if (n > -1 || n < -redoLog.size()) {
 			n = -redoLog.size();
 		}
-		Iterator<Entry<Timestamp, String>> it = redoLog.entrySet().iterator();
+		Iterator<Entry<Timestamp, String>> it = redoLog.descendingMap().entrySet().iterator();
 		while (it.hasNext()) {
 			Entry<Timestamp, String> current = it.next();
 			n += 1;
@@ -193,7 +191,7 @@ public class History implements Closeable {
 		try {
 			FileWriter fw = new FileWriter(this.logFilePath);
 			bw = new BufferedWriter(fw);
-			for (Entry<Timestamp, String> entry : this.log.entrySet()) {
+			for (Entry<Timestamp, String> entry : this.log.descendingMap().entrySet()) {
 				try {
 					bw.write(History.line(entry.getKey(), entry.getValue()));
 				} catch (IOException e) {
@@ -229,12 +227,12 @@ public class History implements Closeable {
 		}
 	}
 
-	protected List<Entry<Timestamp, String>> getLog() {
-		return new ArrayList<Entry<Timestamp, String>>(this.log.entrySet());
+	protected Map<Timestamp, String> getLog() {
+		return new TreeMap<Timestamp, String>(this.log);
 	}
 
-	protected List<Entry<Timestamp,String>> getRedo() {
-		return new ArrayList<Entry<Timestamp, String>>(this.redoLog.entrySet());
+	protected Map<Timestamp, String> getRedo() {
+		return new TreeMap<Timestamp, String>(this.redoLog);
 	}
 
 	@Override
