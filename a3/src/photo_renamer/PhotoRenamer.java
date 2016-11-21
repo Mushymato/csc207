@@ -23,12 +23,12 @@ import backend.*;
 public class PhotoRenamer {
 	public static final long serialVersionUID = 5165545549804727342L;
 
-	private static JFrame frame = new JFrame("PhotoRenamer");
-	private static ImageList imgList = new ImageList();
-	private static ImagePanel imgPanel = new ImagePanel();
-	private static ImageOptions imgOptions = new ImageOptions();
-	private static HistoryList histList = new HistoryList();
-	private static JTabbedPane imgSideBar = new JTabbedPane();
+	private static final JFrame frame = new JFrame("PhotoRenamer");
+	private static final ImageList imgList = new ImageList();
+	private static final ImagePanel imgPanel = new ImagePanel();
+	private static final ImageOptions imgOptions = new ImageOptions();
+	private static final HistoryList histList = new HistoryList();
+	private static final JTabbedPane imgSideBar = new JTabbedPane();
 
 	private static Image currentImg = null;
 
@@ -39,15 +39,15 @@ public class PhotoRenamer {
 	protected static void setCurrentImg(Image newImg) {
 		if (newImg != null) {
 			PhotoRenamer.currentImg = newImg;
+			ImageOptions.changeImage();
 			imgPanel.changeImage();
-			imgOptions.changeImage();
 			histList.changeImage();
 		}
 	}
 
 	public static void main(String[] args) {
 		// Instantiate components
-		imgSideBar.add("Properties", imgOptions);
+		imgSideBar.add("Tags", imgOptions);
 		imgSideBar.add("History", histList);
 
 		PRWrapper pr = new PRWrapper();
@@ -58,7 +58,7 @@ public class PhotoRenamer {
 
 		// Set size
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-		size.setSize((int) (size.getWidth() * 0.66), (int) (size.getHeight() * 0.66));
+		size.setSize((int) (size.getWidth() * 0.5), (int) (size.getHeight() * 0.5));
 		frame.setMinimumSize(size);
 		frame.setPreferredSize(size);
 
@@ -70,6 +70,8 @@ public class PhotoRenamer {
 				new Insets(0, 0, 0, 0), 0, 0));
 		frame.add(imgSideBar, new GridBagConstraints(2, 0, 1, 1, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
+		
+		
 
 		// Listeners
 		frame.addWindowListener(new WindowAdapter() {
