@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -26,6 +27,7 @@ public class ImageOptions extends JPanel {
 
 		this.setLayout(new GridBagLayout());
 		this.setAlignmentX(LEFT_ALIGNMENT);
+		this.setBorder(BorderFactory.createTitledBorder("Tags"));
 
 		imgName = new JLabel("Img Name");
 		imgName.setHorizontalAlignment(JLabel.CENTER);

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -33,6 +34,7 @@ public class HistoryList extends JPanel {
 	public HistoryList() {
 		this.setLayout(new GridBagLayout());
 		this.setAlignmentX(LEFT_ALIGNMENT);
+		this.setBorder(BorderFactory.createTitledBorder("History"));
 		
 		logTable = new JTable(logModel);
 		
@@ -41,10 +43,7 @@ public class HistoryList extends JPanel {
 		colName.add("Time");
 		colName.add("Name");
 		updateTable();
-		
-		logTable.getColumn("Time").setMaxWidth(100);
-		logTable.getColumn("Name").setMaxWidth(100);
-		
+				
 		JScrollPane scrollPane = new JScrollPane(logTable);
 
 		this.add(scrollPane, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
