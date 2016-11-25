@@ -57,7 +57,7 @@ public class PhotoRenamer {
 		frameSize.setSize((int) (frameSize.width * 0.5), (int) (frameSize.height * 0.5));
 		frame.setMinimumSize(frameSize);
 		frame.setPreferredSize(frameSize);
-		Dimension sideSize = new Dimension((int)(frameSize.width * 0.2), frameSize.height);
+		Dimension sideSize = new Dimension((int)(frameSize.width * 0.25), frameSize.height);
 		imgOptions.setPreferredSize(sideSize);
 		imgList.setPreferredSize(sideSize);
 		Dimension histSize = new Dimension(frameSize.width, (int)(frameSize.height * 0.1));
@@ -65,13 +65,13 @@ public class PhotoRenamer {
 		
 		// Layout & components
 		frame.setLayout(new GridBagLayout());
-		frame.add(imgList, new GridBagConstraints(0, 0, 1, 7, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+		frame.add(imgList, new GridBagConstraints	(0, 0, 1, 3, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		frame.add(imgPanel, new GridBagConstraints(1, 0, 3, 5, 10, 10, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+		frame.add(imgPanel, new GridBagConstraints	(1, 0, 2, 2, 5, 5, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		frame.add(imgOptions, new GridBagConstraints(4, 0, 1, 7, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH,
+		frame.add(imgOptions, new GridBagConstraints(3, 0, 1, 3, 1, 1, GridBagConstraints.WEST, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));		
-		frame.add(histList, new GridBagConstraints(1, 5, 1, 2, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
+		frame.add(histList, new GridBagConstraints	(1, 2, 2, 1, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 		
 

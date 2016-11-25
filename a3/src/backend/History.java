@@ -124,6 +124,7 @@ public class History implements Closeable {
 	 * @return the reverted change, or null if log is empty
 	 */
 	protected String unChange(int n) {
+		//TODO: fix this
 		if (n < 1 || n > log.size()) {
 			n = log.size();
 		}
