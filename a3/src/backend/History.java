@@ -100,7 +100,7 @@ public class History implements Closeable {
 
 	/**
 	 * Add a newChange to History. Put change into HashMap<Timestamp, String>
-	 * log. Then write change to logFile.
+	 * log.
 	 * 
 	 * @param change
 	 *            Change to be recorded to logFile.
@@ -124,7 +124,6 @@ public class History implements Closeable {
 	 * @return the reverted change, or null if log is empty
 	 */
 	protected String unChange(int n) {
-		//TODO: fix this
 		if (n < 1 || n > log.size()) {
 			n = log.size();
 		}
@@ -132,11 +131,13 @@ public class History implements Closeable {
 		while (it.hasNext()) {
 			Entry<Timestamp, String> current = it.next();
 			if (n == 0) {
-				this.newChange(current.getValue());
 				return current.getValue();
 			}
 			n -= 1;
-			redoLog.entrySet().add(current);
+			
+			if(!redoLog.containsKey(current.getKey())){
+				redoLog.put(current.getKey(), current.getValue());
+			}
 			it.remove();
 		}
 		return null;
@@ -151,22 +152,24 @@ public class History implements Closeable {
 	 *            Number of changes to redo.
 	 * @return the reverted change, or null if redoLog is empty
 	 */
-	protected String reChange(int n) {
-		if (n > -1 || n < -redoLog.size()) {
-			n = -redoLog.size();
-		}
-		Iterator<Entry<Timestamp, String>> it = redoLog.descendingMap().entrySet().iterator();
-		while (it.hasNext()) {
-			Entry<Timestamp, String> current = it.next();
-			n += 1;
-			if (n == 0) {
-				return current.getValue();
-			}
-			log.entrySet().add(current);
-			it.remove();
-		}
-		return null;
-	}
+//	protected String reChange(int n) {
+//		if (n > -1 || n < -redoLog.size()) {
+//			n = -redoLog.size();
+//		}
+//		Iterator<Entry<Timestamp, String>> it = redoLog.descendingMap().entrySet().iterator();
+//		while (it.hasNext()) {
+//			Entry<Timestamp, String> current = it.next();
+//			n += 1;
+//			if (n == 0) {
+//				return current.getValue();
+//			}
+//			if(!log.containsKey(current.getKey())){
+//				log.put(current.getKey(), current.getValue());
+//			}
+//			it.remove();
+//		}
+//		return null;
+//	}
 
 	// /**
 	// * Reverts to the change made at the specified Timestamp. Does not delete
