@@ -16,13 +16,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-
+/**
+ * JPanel containing table of history entries. Handles name reversion.
+ */
 public class HistoryList extends JPanel {
 
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 
+	/** Table of history entries*/
 	private static JTable logTable;
+	/** Column namess*/
 	static Vector<String> colName = new Vector<String>();
+	/** Log model used by logTable.*/
 	private static DefaultTableModel logModel = new DefaultTableModel() {
 		private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 
@@ -31,7 +36,8 @@ public class HistoryList extends JPanel {
 			return false;
 		}
 	};
-
+	
+	/** Initialize new HistoryList*/
 	public HistoryList() {
 		this.setLayout(new GridBagLayout());
 		this.setAlignmentX(LEFT_ALIGNMENT);
@@ -63,6 +69,7 @@ public class HistoryList extends JPanel {
 				new Insets(0, 0, 0, 0), 0, 0));
 	}
 
+	/** Update info in logTable*/
 	public static void updateTable() {
 		Vector<Vector<String>> logData = new Vector<Vector<String>>();
 		if (PhotoRenamer.getCurrentImg() != null) {

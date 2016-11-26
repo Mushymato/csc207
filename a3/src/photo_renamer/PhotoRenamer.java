@@ -21,19 +21,22 @@ import backend.*;
  */
 public class PhotoRenamer {
 	public static final long serialVersionUID = 5165545549804727342L;
-
+	
 	private static final JFrame frame = new JFrame("PhotoRenamer");
 	private static final ImageList imgList = new ImageList();
 	private static final ImagePanel imgPanel = new ImagePanel();
 	private static final ImageOptions imgOptions = new ImageOptions();
 	private static final HistoryList histList = new HistoryList();
 
+	/** The current selected Image*/
 	private static Image currentImg = null;
 
+	/** Return the current selected Image*/
 	protected static Image getCurrentImg() {
 		return currentImg;
 	}
 
+	/* Set currentImh and notify components to update information accordingly*/
 	protected static void setCurrentImg(Image newImg) {
 		if (newImg != null) {
 			PhotoRenamer.currentImg = newImg;

@@ -15,13 +15,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+/**
+ * JPanel containing the image name and list of tags. Handles tag addition/deletion operations.
+ */
 public class ImageOptions extends JPanel {
 
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
-
+	
+	/** Name of the current image displayed.*/
 	private static JLabel imgName;
+	/** List of current tags*/
 	private static JList<String> listTags;
-
+	
+	/** Initialize new ImageOptions*/
 	public ImageOptions() {
 		super();
 
@@ -73,6 +79,7 @@ public class ImageOptions extends JPanel {
 		this.setVisible(true);
 	}
 
+	/** Update imgName and imgTags to reflect currentImg*/
 	public static void changeImage() {
 		if (PhotoRenamer.getCurrentImg() != null) {
 			imgName.setText(PhotoRenamer.getCurrentImg().getName());
