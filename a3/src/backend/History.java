@@ -152,24 +152,24 @@ public class History implements Closeable {
 	 *            Number of changes to redo.
 	 * @return the reverted change, or null if redoLog is empty
 	 */
-//	protected String reChange(int n) {
-//		if (n > -1 || n < -redoLog.size()) {
-//			n = -redoLog.size();
-//		}
-//		Iterator<Entry<Timestamp, String>> it = redoLog.descendingMap().entrySet().iterator();
-//		while (it.hasNext()) {
-//			Entry<Timestamp, String> current = it.next();
-//			n += 1;
-//			if (n == 0) {
-//				return current.getValue();
-//			}
-//			if(!log.containsKey(current.getKey())){
-//				log.put(current.getKey(), current.getValue());
-//			}
-//			it.remove();
-//		}
-//		return null;
-//	}
+	protected String reChange(int n) {
+		if (n > -1 || n < -redoLog.size()) {
+			n = -redoLog.size();
+		}
+		Iterator<Entry<Timestamp, String>> it = redoLog.descendingMap().entrySet().iterator();
+		while (it.hasNext()) {
+			Entry<Timestamp, String> current = it.next();
+			n += 1;
+			if (n == 0) {
+				return current.getValue();
+			}
+			if(!log.containsKey(current.getKey())){
+				log.put(current.getKey(), current.getValue());
+			}
+			it.remove();
+		}
+		return null;
+	}
 
 	// /**
 	// * Reverts to the change made at the specified Timestamp. Does not delete

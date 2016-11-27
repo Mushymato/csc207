@@ -224,14 +224,14 @@ public class Image implements Closeable {
 	 */
 	public boolean revertName(int n) {
 		String name = null;
-//		if (n < 0) {
-//			name = imgHistory.reChange(n);
-//		} else if (n > 0) {
-//			name = imgHistory.unChange(n);
-//		} else {
-//			return true;
-//		}
-		name = imgHistory.unChange(n);
+		if (n < 0) {
+			name = imgHistory.reChange(n);
+		} else if (n > 0) {
+			name = imgHistory.unChange(n);
+		} else {
+			return true;
+		}
+//		name = imgHistory.unChange(n);
 		if (name != null) {
 			File newFile = new File(imgFile.getParentFile().getAbsolutePath() + "\\" + name);
 			if (imgFile.renameTo(newFile)) {
