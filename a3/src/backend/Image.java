@@ -14,7 +14,10 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-/** Manages an image file and tag add/remove operations */
+/**
+ * Manages an image file and tag add/remove operations. Observe change of
+ * PhotoRenamer.currentImage and update data appropriately
+ */
 public class Image implements Closeable {
 	/** Location of the image file */
 	private File imgFile;
@@ -239,7 +242,7 @@ public class Image implements Closeable {
 		} else {
 			return true;
 		}
-//		name = imgHistory.unChange(n);
+		// name = imgHistory.unChange(n);
 		if (name != null) {
 			File newFile = new File(imgFile.getParentFile().getAbsolutePath() + "\\" + name);
 			if (imgFile.renameTo(newFile)) {
@@ -285,23 +288,23 @@ public class Image implements Closeable {
 	public Map<Timestamp, String> getRedo() {
 		return this.imgHistory.getRedo();
 	}
-	
-	public File getImageFile(){
+
+	public File getImageFile() {
 		return this.imgFile;
 	}
-	
-	public boolean deleteLog(){
+
+	public boolean deleteLog() {
 		return this.imgHistory.delete();
 	}
 
-	public List<String> getTags(){
+	public List<String> getTags() {
 		return new ArrayList<String>(imgTags);
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return this.getName();
 	}
-	
+
 	@Override
 	public void close() {
 		imgFile = null;

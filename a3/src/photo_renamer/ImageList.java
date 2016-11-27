@@ -18,11 +18,8 @@ import javax.swing.JScrollPane;
 import backend.*;
 
 /**
- * Step pls finish this.
- * TODO:
- * 	Directory selection.
- * 	Add all images in dir (PRWrapper.addImagesInDir())
- *  List images in dir 
+ * List images in a directory, or all previously loaded image.
+ * PhotoRenamer.currentImage and update data appropriately
  */
 public class ImageList extends JPanel {
 

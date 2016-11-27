@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 /**
  * Visually display the specified image in a Panel.
+ * PhotoRenamer.currentImage and update data appropriately
  */
 public class ImagePanel extends JPanel {
 	/* Serial Version ID */

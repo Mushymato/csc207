@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 import backend.*;
 
 /**
- * Main photo renamer class.
+ * Main photo renamer class. Alert ImagePanel, ImageList, HistoryList and ImageOptions when current image changes.
  */
 public class PhotoRenamer {
 	public static final long serialVersionUID = 5165545549804727342L;

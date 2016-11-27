@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -17,6 +16,7 @@ import javax.swing.JScrollPane;
 
 /**
  * JPanel containing the image name and list of tags. Handles tag addition/deletion operations.
+ * PhotoRenamer.currentImage and update data appropriately
  */
 public class ImageOptions extends JPanel {
 
