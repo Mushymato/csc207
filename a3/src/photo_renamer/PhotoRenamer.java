@@ -14,9 +14,6 @@ import backend.*;
 
 /**
  * Main photo renamer class.
- * 
- * @author miche
- *
  */
 public class PhotoRenamer {
 	public static final long serialVersionUID = 5165545549804727342L;

@@ -12,11 +12,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Manage known tags and track what tags have been used for which images Consist
- * solely of static attributes and methods, should not be instantiated
+ * solely of static attributes and methods, should not be instantiated.
+ * Singleton, observes Image
  */
 public class Tags {
 
@@ -28,8 +30,7 @@ public class Tags {
 	private static File tagFile;
 
 	/**
-	 * Load tags from the tags file Read and add each line as a tag. Each line
-	 * is a tag and the usage count of the tag.
+	 * Load tags from the tags file Read and add each line as a tag.
 	 */
 	public static void load() {
 		tagFile = new File(PRWrapper.dataDirPath + "tags.data");
@@ -95,9 +96,9 @@ public class Tags {
 	/**
 	 * Return a copy of all the tags in tagMap.
 	 * 
-	 * @return HashSet of all the tags.
+	 * @return Set of all the tags.
 	 */
-	public static HashSet<String> getTags() {
+	public static Set<String> getTags() {
 		return new HashSet<String>(tagMap.keySet());
 	}
 
