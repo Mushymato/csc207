@@ -24,11 +24,11 @@ public class HistoryList extends JPanel {
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 
 	/** Table of history entries*/
-	private static JTable logTable;
+	private JTable logTable;
 	/** Column namess*/
-	static Vector<String> colName = new Vector<String>();
+	private Vector<String> colName = new Vector<String>();
 	/** Log model used by logTable.*/
-	private static DefaultTableModel logModel = new DefaultTableModel() {
+	private DefaultTableModel logModel = new DefaultTableModel() {
 		private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 
 		/** Disable editing. */
@@ -57,8 +57,7 @@ public class HistoryList extends JPanel {
 				int s = logTable.getSelectedRow();
 				if (s != -1) {
 					PhotoRenamer.getCurrentImg().revertName(logModel.getRowCount() - 1 - s);
-					updateTable();
-					ImageOptions.changeImage();
+					PhotoRenamer.alert();
 				}
 			}
 		});
@@ -70,7 +69,7 @@ public class HistoryList extends JPanel {
 	}
 
 	/** Update info in logTable*/
-	public static void updateTable() {
+	public void updateTable() {
 		Vector<Vector<String>> logData = new Vector<Vector<String>>();
 		if (PhotoRenamer.getCurrentImg() != null) {
 			Iterator<Entry<Timestamp, String>> it = PhotoRenamer.getCurrentImg().getLog().entrySet().iterator();

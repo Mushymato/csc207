@@ -7,7 +7,6 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.List;
 
 import javax.swing.JFrame;
 
@@ -36,24 +35,30 @@ public class PhotoRenamer {
 		return currentImg;
 	}
 
-	/* Set currentImh and notify components to update information accordingly*/
+	/** Set currentImh and notify components to update information accordingly*/
 	protected static void setCurrentImg(Image newImg) {
 		if (newImg != null) {
 			PhotoRenamer.currentImg = newImg;
-			ImageOptions.changeImage();
-			HistoryList.updateTable();
-			imgPanel.changeImage();
-			frame.pack();
+			alert();
 		}
+	}
+	
+	/** Update data of all components */
+	protected static void alert(){
+		imgOptions.updateInfo();
+		histList.updateTable();
+		imgList.updateList();
+		imgPanel.changeImage();
+		frame.pack();
 	}
 
 	public static void main(String[] args) {
-		// Instantiate components
-		PRWrapper pr = new PRWrapper();
-
-		// Placeholder
-		List<Image> p = pr.listImage();
-		setCurrentImg(p.get(4));
+//		// Instantiate components
+//		PRWrapper pr = new PRWrapper();
+//
+//		// Placeholder
+//		List<Image> p = pr.listImage();
+//		setCurrentImg(p.get(4));
 
 		// Set size
 		Dimension frameSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -77,12 +82,11 @@ public class PhotoRenamer {
 		frame.add(histList, new GridBagConstraints	(1, 2, 2, 1, 1, 1, GridBagConstraints.SOUTH, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 		
-
 		// Listeners
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				pr.close();
+				imgList.pr.close();
 			}
 		});
 		// Boilerplate

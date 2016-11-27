@@ -2,6 +2,7 @@ package photo_renamer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -23,13 +24,13 @@ import backend.*;
 public class ImageList extends JPanel {
 
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
-	JButton dirSelect;
-	JScrollPane imgPane;
-	JList<Image> imgList;
+	private JList<Image> imgList;
+	protected PRWrapper pr;
 
 	ImageList() {
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		pr = new PRWrapper();
 		
 		JFileChooser dirChooser = new JFileChooser();
 		dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -42,7 +43,7 @@ public class ImageList extends JPanel {
 				
 			}
 		});
-		JButton showAll = new JButton("Show All Images");
+		JButton showAll = new JButton("Select Image");
 		showAll.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -52,13 +53,14 @@ public class ImageList extends JPanel {
 		});
 
 		
-		imgPane = new JScrollPane();
+		JScrollPane imgPane = new JScrollPane(imgList);
 		imgList = new JList<Image>();
 		
-		imgPane.add(imgList);
 		this.add(imgPane);
 		this.add(dirSelect);
 		this.add(showAll);
 	}
-
+	
+	public void updateList() {
+	}	
 }

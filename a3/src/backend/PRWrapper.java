@@ -168,17 +168,15 @@ public class PRWrapper implements Closeable {
 	 * 
 	 * @param img
 	 *            A file that points to a image
-	 * @return The newly added image object.
-	 * @throws IllegalArgumentException:
-	 *             Image has already been added
+	 * @return The newly added image object or previously added image object already present.
 	 * @throws FileNotFoundException:
 	 *             Image is not found
 	 */
 	public Image addImage(File img) throws IllegalArgumentException, FileNotFoundException {
 		for (int i = 0; i < images.size(); i++) {
 			try {
-				if (images.get(i).getPath() == img.getCanonicalPath()) {
-					throw new IllegalArgumentException("Image has already been added.");
+				if (images.get(i).getPath().equals(img.getCanonicalPath())) {
+					return images.get(i);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -193,16 +191,20 @@ public class PRWrapper implements Closeable {
 		}
 	}
 
-	public ArrayList<Image> addImagesInDir(File dir) {
+	/**
+	 * Add all images in a directory.
+	 * @param dir location of directory
+	 * @return
+	 */
+	public List<Image> addImagesInDir(File dir) {
 		ArrayList<Image> imgInDir = new ArrayList<Image>();
 		if (dir.isDirectory()) {
 			File[] dirFiles = dir.listFiles();
 			for (int i = 0; i < dirFiles.length; i++) {
 				try {
-					Image current = new Image(dirFiles[i]);
-					imgInDir.add(current);
-				} catch (FileNotFoundException | IllegalArgumentException e) {
-					// do nothing
+					imgInDir.add(this.addImage(dirFiles[i]));
+				} catch (IllegalArgumentException | FileNotFoundException e) {
+					//Do nothing and continue
 				}
 			}
 		}
@@ -236,8 +238,9 @@ public class PRWrapper implements Closeable {
 	/**
 	 * Record the canonical paths of all Image objects in the file located at
 	 * imagesPath
+	 * @throws Exception if ImgPath file not found or deleted
 	 */
-	public void writeImagePaths() {
+	public void writeImagePaths() throws Exception {
 		BufferedWriter bw = null;
 		try {
 			FileWriter fw = new FileWriter(imagesPath);
@@ -247,7 +250,7 @@ public class PRWrapper implements Closeable {
 				bw.write("\n");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new Exception("ImgPath file not found or deleted");
 		} finally {
 			if (bw != null) {
 				try {
@@ -321,7 +324,10 @@ public class PRWrapper implements Closeable {
 	@Override
 	public void close() {
 		Tags.writeTags();
-		this.writeImagePaths();
+		try {
+			this.writeImagePaths();
+		} catch (Exception e) {
+		}
 		for (int i = 0; i < images.size(); i++) {
 			images.get(i).close();
 		}
@@ -362,7 +368,6 @@ public class PRWrapper implements Closeable {
 					String path = input.next();
 					String res = pr.addImage(path);
 					System.out.println(res);
-					pr.writeImagePaths();
 					System.out.print("Add another image? y/n ");
 					yn = input.next();
 				} while (yn.matches("y"));

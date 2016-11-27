@@ -23,9 +23,9 @@ public class ImageOptions extends JPanel {
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 	
 	/** Name of the current image displayed.*/
-	private static JLabel imgName;
+	private JLabel imgName;
 	/** List of current tags*/
-	private static JList<String> listTags;
+	private JList<String> listTags;
 	
 	/** Initialize new ImageOptions*/
 	public ImageOptions() {
@@ -48,8 +48,7 @@ public class ImageOptions extends JPanel {
 				if (PhotoRenamer.getCurrentImg() != null) {
 					String tag = JOptionPane.showInputDialog("Enter a tag");
 					PhotoRenamer.getCurrentImg().addTag(tag);
-					changeImage();
-					HistoryList.updateTable();
+					PhotoRenamer.alert();
 				}
 			}
 		});
@@ -60,8 +59,7 @@ public class ImageOptions extends JPanel {
 				if (PhotoRenamer.getCurrentImg() != null) {
 					String tag = listTags.getSelectedValue();
 					PhotoRenamer.getCurrentImg().delTag(tag);
-					changeImage();
-					HistoryList.updateTable();
+					PhotoRenamer.alert();
 				}
 			}
 		});
@@ -80,7 +78,7 @@ public class ImageOptions extends JPanel {
 	}
 
 	/** Update imgName and imgTags to reflect currentImg*/
-	public static void changeImage() {
+	public void updateInfo() {
 		if (PhotoRenamer.getCurrentImg() != null) {
 			imgName.setText(PhotoRenamer.getCurrentImg().getName());
 			List<String> imgTags = PhotoRenamer.getCurrentImg().getTags();

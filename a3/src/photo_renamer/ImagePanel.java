@@ -13,7 +13,7 @@ public class ImagePanel extends JPanel {
 	/* Serial Version ID */
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 	/** Image currently loaded */
-	private BufferedImage img;
+	private BufferedImage img = null;
 
 	/**
 	 * Make a new empty image panel.
@@ -29,24 +29,27 @@ public class ImagePanel extends JPanel {
 	public void changeImage() {
 		try {
 			img = ImageIO.read(PhotoRenamer.getCurrentImg().getImageFile());
+			this.repaint();
 		} catch (IOException e) {
-			e.printStackTrace();
+			img = null;
 		}
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		int pW = this.getWidth(), pH = this.getHeight(), iW = img.getWidth(), iH = img.getHeight();
+		if(img != null){
+			int pW = this.getWidth(), pH = this.getHeight(), iW = img.getWidth(), iH = img.getHeight();
 
-		double scale;
-		if (iW > iH) {
-			scale = (double) (pW) / (double) (iW);
-		} else {
-			scale = (double) (pH) / (double) (iH);
+			double scale;
+			if (iW > iH) {
+				scale = (double) (pW) / (double) (iW);
+			} else {
+				scale = (double) (pH) / (double) (iH);
+			}
+			int x = (int) ((pW - iW * scale) / 2);
+			int y = (int) ((pH - iH * scale) / 2);
+			g.drawImage(img, x, y, (int) (iW * scale), (int) (iH * scale), this);
 		}
-		int x = (int) ((pW - iW * scale) / 2);
-		int y = (int) ((pH - iH * scale) / 2);
-		g.drawImage(img, x, y, (int) (iW * scale), (int) (iH * scale), this);
 	}
 }
