@@ -1,10 +1,14 @@
 package photo_renamer;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
@@ -19,17 +23,18 @@ import backend.*;
  * 	Directory selection.
  * 	Add all images in dir (PRWrapper.addImagesInDir())
  *  List images in dir 
- *  Optional: Thumbnail
  */
 public class ImageList extends JPanel {
 
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 	private JList<Image> imgList;
+	private File currentDir;
 	protected PRWrapper pr;
 
 	ImageList() {
 		super();
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		this.setLayout(new GridBagLayout());
+		this.setBorder(BorderFactory.createTitledBorder("Images"));
 		pr = new PRWrapper();
 		
 		JFileChooser dirChooser = new JFileChooser();
@@ -39,28 +44,42 @@ public class ImageList extends JPanel {
 		dirSelect.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+				int res = dirChooser.showOpenDialog(null);
+				if(res == JFileChooser.APPROVE_OPTION){
+					currentDir = dirChooser.getSelectedFile();
+					updateList();
+				}
 			}
 		});
-		JButton showAll = new JButton("Select Image");
-		showAll.addActionListener(new ActionListener(){
+		JButton selectImage = new JButton("Select Image");
+		selectImage.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+				PhotoRenamer.setCurrentImg(imgList.getSelectedValue());
 			}
+			
 		});
 
-		
-		JScrollPane imgPane = new JScrollPane(imgList);
 		imgList = new JList<Image>();
-		
-		this.add(imgPane);
-		this.add(dirSelect);
-		this.add(showAll);
+		JScrollPane imgPane = new JScrollPane(imgList);
+		this.updateList();
+		this.add(imgPane, new GridBagConstraints(0, 0, 1, 1, 1, 20, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
+		this.add(dirSelect, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
+		this.add(selectImage, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+				new Insets(0, 0, 0, 0), 0, 0));
 	}
 	
 	public void updateList() {
+		if(currentDir != null){
+			this.setBorder(BorderFactory.createTitledBorder(currentDir.getName()));
+			List<Image> imagesInDir = pr.addImagesInDir(currentDir);
+			this.imgList.setListData(imagesInDir.toArray(new Image[imagesInDir.size()]));;
+		} else {
+			this.setBorder(BorderFactory.createTitledBorder("All Images"));
+			List<Image> imagesInDir = pr.listImage();
+			this.imgList.setListData(imagesInDir.toArray(new Image[imagesInDir.size()]));;
+		}
 	}	
 }

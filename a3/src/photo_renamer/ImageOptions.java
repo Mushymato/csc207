@@ -22,8 +22,6 @@ public class ImageOptions extends JPanel {
 
 	private static final long serialVersionUID = PhotoRenamer.serialVersionUID;
 	
-	/** Name of the current image displayed.*/
-	private JLabel imgName;
 	/** List of current tags*/
 	private JList<String> listTags;
 	
@@ -33,10 +31,8 @@ public class ImageOptions extends JPanel {
 
 		this.setLayout(new GridBagLayout());
 		this.setAlignmentX(LEFT_ALIGNMENT);
-		this.setBorder(BorderFactory.createTitledBorder("Tags"));
+		this.setBorder(BorderFactory.createTitledBorder("Img Name"));
 
-		imgName = new JLabel("Img Name");
-		imgName.setHorizontalAlignment(JLabel.CENTER);
 		listTags = new JList<String>();
 		JScrollPane listTagsScroll = new JScrollPane(listTags);
 		JButton addTag;
@@ -64,14 +60,11 @@ public class ImageOptions extends JPanel {
 			}
 		});
 
-
-		this.add(imgName, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
-				new Insets(0, 0, 0, 0), 0, 0));
-		this.add(listTagsScroll, new GridBagConstraints(0, 1, 1, 1, 1, 20, GridBagConstraints.EAST,
+		this.add(listTagsScroll, new GridBagConstraints(0, 0, 1, 1, 1, 20, GridBagConstraints.EAST,
 				GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(addTag, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+		this.add(addTag, new GridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		this.add(delTag, new GridBagConstraints(0, 3, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
+		this.add(delTag, new GridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.EAST, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 
 		this.setVisible(true);
@@ -80,7 +73,7 @@ public class ImageOptions extends JPanel {
 	/** Update imgName and imgTags to reflect currentImg*/
 	public void updateInfo() {
 		if (PhotoRenamer.getCurrentImg() != null) {
-			imgName.setText(PhotoRenamer.getCurrentImg().getName());
+			this.setBorder(BorderFactory.createTitledBorder(PhotoRenamer.getCurrentImg().imageName()));
 			List<String> imgTags = PhotoRenamer.getCurrentImg().getTags();
 			listTags.setListData(imgTags.toArray(new String[imgTags.size()]));
 		}

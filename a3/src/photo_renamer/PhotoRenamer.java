@@ -46,7 +46,6 @@ public class PhotoRenamer {
 		histList.updateTable();
 		imgList.updateList();
 		imgPanel.changeImage();
-		frame.pack();
 	}
 
 	public static void main(String[] args) {

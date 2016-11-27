@@ -55,6 +55,14 @@ public class Image implements Closeable {
 		}
 	}
 
+	/**
+	 * Create new Image object using a image File
+	 * 
+	 * @param img
+	 *            image File
+	 * @throws FileNotFoundException
+	 *             If file does not exist or file does not have a extension
+	 */
 	protected Image(File img) throws FileNotFoundException, IllegalArgumentException {
 		if (img.exists()) {
 			String[] types = ImageIO.getReaderFileSuffixes();
@@ -144,9 +152,9 @@ public class Image implements Closeable {
 	/**
 	 * Get the name of this image without tags and file extensions
 	 * 
-	 * @return
+	 * @return name of image without tags or extensions
 	 */
-	protected String imageName() {
+	public String imageName() {
 		String name = imgFile.getName();
 		try {
 			return name.substring(0, name.indexOf(Tags.PREFIX));
@@ -288,6 +296,10 @@ public class Image implements Closeable {
 
 	public List<String> getTags(){
 		return new ArrayList<String>(imgTags);
+	}
+	
+	public String toString(){
+		return this.getName();
 	}
 	
 	@Override

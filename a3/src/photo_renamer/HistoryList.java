@@ -54,9 +54,9 @@ public class HistoryList extends JPanel {
 		revert.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int s = logTable.getSelectedRow();
-				if (s != -1) {
-					PhotoRenamer.getCurrentImg().revertName(logModel.getRowCount() - 1 - s);
+				int idx = logTable.getSelectedRow();
+				if (idx != -1) {
+					PhotoRenamer.getCurrentImg().revertName(logModel.getRowCount() - 1 - idx);
 					PhotoRenamer.alert();
 				}
 			}
@@ -64,7 +64,7 @@ public class HistoryList extends JPanel {
 		
 		this.add(revert, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
-		this.add(scrollPane, new GridBagConstraints(0, 1, 1, 3, 1, 3, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+		this.add(scrollPane, new GridBagConstraints(0, 1, 1, 6, 1, 6, GridBagConstraints.CENTER, GridBagConstraints.BOTH,
 				new Insets(0, 0, 0, 0), 0, 0));
 	}
 
